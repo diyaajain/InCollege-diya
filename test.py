@@ -2,6 +2,8 @@ import pytest
 import os
 from main import *
 
+
+
 ## VALUES FOR TESTING ##
 
 @pytest.fixture
@@ -127,6 +129,57 @@ def user_input_job_bad(inputs, job_title, job_desc, job_employer, job_location, 
     inputs.append(job_salary)
 
 @pytest.fixture
+def user_input_guest_controls(inputs, good_username, good_pass, return_key):
+    inputs.append(good_username)
+    inputs.append(good_pass)
+    inputs.append("1")
+    inputs.append("3")
+    inputs.append("2")
+    inputs.append(return_key)
+
+@pytest.fixture
+def user_input_languages(inputs, good_username, good_pass, return_key):
+    inputs.append(good_username)
+    inputs.append(good_pass)
+    inputs.append("2")
+    inputs.append("1")
+    inputs.append(return_key)
+
+@pytest.fixture
+def user_input_search_user(inputs, firstname, lastname, return_key):
+    inputs.append(firstname)
+    inputs.append(lastname)
+    inputs.append(return_key)
+
+@pytest.fixture
+def user_input_search_user_bad(inputs, good_username, bad_username, return_key):
+    inputs.append(good_username)
+    inputs.append(bad_username)
+    inputs.append(return_key)
+
+@pytest.fixture
+def user_input_find_person(inputs, good_username, good_pass, firstname, lastname, return_key):
+    inputs.append(good_username)
+    inputs.append(good_pass)
+    inputs.append(firstname)
+    inputs.append(lastname)
+    inputs.append(return_key)
+
+@pytest.fixture
+def user_input_find_person_bad(inputs, good_username, good_pass, bad_username, return_key):
+    inputs.append(good_username)
+    inputs.append(good_pass)
+    inputs.append(good_username)
+    inputs.append(bad_username)
+    inputs.append(return_key)
+
+@pytest.fixture
+def user_input_privacy(inputs, good_username, good_pass, return_key):
+    inputs.append(good_username)
+    inputs.append(good_pass)
+    inputs.append(return_key)
+
+@pytest.fixture
 def user_input_return(inputs, return_key):
     inputs.append(return_key)
 
@@ -208,7 +261,7 @@ def prefab_job(job_title, job_desc, job_employer, job_location, job_salary, firs
 
 # This creates the maximun number of prefab jobs
 @pytest.fixture
-def fill_jobs(good_username, good_pass, firstname, lastname):
+def fill_jobs(job_title, job_desc, job_employer, job_location, job_salary, firstname, lastname):
     for i in range(MAX_JOB):
         jobs.append(Job())
         jobs[-1].create(job_title, job_desc, job_employer, job_location, job_salary)
@@ -406,6 +459,20 @@ def test_privacy_policy(capsys, mock_inputs, user_input_return):
     assert "You entrust us with your information" in captured.out
     assert "this is a huge responsibility." in captured.out
 
+def test_privacy_policy_logged_in(prefab_account, capsys, mock_inputs, user_input_privacy):
+
+    login()
+
+    privacy_policy()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    # Check if the expected content is present in the output
+    assert "You entrust us with your information" in captured.out
+    assert "this is a huge responsibility." in captured.out
+    assert "(G)uest Controls" in captured.out
+
 def test_cookie_policy():
     result = cookie_policy()
     assert "Cookie Policy" in result
@@ -420,3 +487,97 @@ def test_brand_policy():
     result = brand_policy()
     assert "Brand Policy" in result
     assert "Our Brand Policy outlines the guidelines" in result
+
+def test_guest_controls(mock_inputs, capsys, user_input_return):
+    guest_controls()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    assert "Guest Controls: Information" in captured.out
+    assert "Kindly login to use" in captured.out
+
+def test_languages(mock_inputs, capsys, user_input_return):
+
+    languages()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    assert "Language Preferences: Info" in captured.out
+    assert "Kindly login to your account to set your" in captured.out
+
+
+def test_languages_logged_in(prefab_account, mock_inputs, capsys, user_input_languages):
+
+    # Run the login function
+    login()
+
+    #Run the guest controls menu
+    languages()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    # Check if the login was successful
+    assert "Your current language preference is:  Spanish" in captured.out
+    assert "Your current language preference is:  English " in captured.out
+
+
+def test_guest_controls_logged_in(prefab_account, mock_inputs, capsys, user_input_guest_controls):
+
+    # Run the login function
+    login()
+
+    #Run the guest controls menu
+    guest_controls()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    # Check if the login was successful
+    assert "Email ads:  Yes  SMS ads:  Yes  Target ads:  Yes" in captured.out
+    assert "Email ads:  No  SMS ads:  Yes  Target ads:  Yes" in captured.out
+    assert "Email ads:  No  SMS ads:  Yes  Target ads:  No" in captured.out
+    assert "Email ads:  No  SMS ads:  No  Target ads:  No" in captured.out
+
+def test_search_user(prefab_account, mock_inputs, capsys, user_input_search_user):
+
+    search_user()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    assert "They are a part of the" in captured.out
+
+def test_search_user_bad(prefab_account, mock_inputs, capsys, user_input_search_user_bad):
+
+    search_user()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    assert "They are not yet a part" in captured.out
+
+def test_find_person(prefab_account, mock_inputs, capsys, user_input_find_person, firstname, lastname, good_username):
+
+    login()
+
+    find_person()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    assert "The username of "+firstname+" "+lastname+" is: "+good_username in captured.out
+
+def test_find_person_bad(prefab_account, mock_inputs, capsys, user_input_find_person_bad):
+
+    login()
+
+    find_person()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    assert "This person is not a member of" in captured.out
+
