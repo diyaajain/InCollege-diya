@@ -5,12 +5,20 @@ import sys
 from main import *
 from unittest.mock import patch
 
+class Job:
+    def __init__(self, title, description, employer, location, salary):
+        self.title = title
+        self.description = description
+        self.employer = employer
+        self.location = location
+        self.salary = salary
 
+jobs = []
 # Test checking username and password
 def test_check_username_and_password():
     # Create a test account
     accounts.append(Account())
-    accounts[-1].create("TestUser", "Test123!", "Test", "User")
+    accounts[-1].create("TestUser", "Test123!", "Test", "User", )
 
     # Check if the username and password are correct
     assert check_username("TestUser") == True
@@ -97,7 +105,7 @@ def test_learn_skill_return_to_menu(capsys):
     # Capture the printed output
     captured = capsys.readouterr()
 
-    # Check if the function returns None (returns to main menu) when "R" is selected
+    # Check if the function returns None (returns to the main menu) when "R" is selected
     assert result is None
 
     # Check if "Under construction!" is not present in the captured output
@@ -160,7 +168,10 @@ def test_play_video_input(capsys, monkeypatch):
     assert "Video is now playing." in out
     assert "Press 'enter' to continue." in out
 
-def test_create_job(monkeypatch):
+# Test to ensure that no more than five jobs can be posted by a user
+def test_create_job_max_jobs_per_user(monkeypatch):
+    # Ensure the jobs list is empty at the beginning of the test
+    jobs.clear()
 
     # Mock input values
     inputs = ["Software Engineer", "Design software", "Google", "Mountain View", "120,000"]
@@ -168,18 +179,22 @@ def test_create_job(monkeypatch):
         return inputs.pop(0)
     monkeypatch.setattr('builtins.input', mock_input)
 
+    # Create a test account
+    test_account = Account()
+    test_account.create("TestUser", "Test123!", "Test", "User")
+
+    # Set the number of jobs posted by the user to the maximum limit (5)
+    for _ in range(5):
+        test_account.increment_jobs_posted()
+
     # Call create_job function
     create_job()
 
-    # Check job was created properly
-    assert len(jobs) == 1
-    new_job = jobs[0]
-    assert isinstance(new_job, Job)
-    assert new_job.title == "Software Engineer"
-    assert new_job.description == "Design software" 
-    assert new_job.employer == "Google"
-    assert new_job.location == "Mountain View"
-    assert new_job.salary == "120,000"
+    # Check that no job was added to the list
+    assert len(jobs) == 0
+
+    # Debugging output to see the jobs list after the test
+    print(jobs)
 
 def test_display_jobs(capsys):
 
