@@ -41,8 +41,6 @@ class Account:
         The first name of the account user.
     __lastname : str (private)
         The last name of the account user.
-    __jobs_posted : int (private)
-        The number of jobs posted by the user.
 
     Methods
     -------
@@ -60,9 +58,6 @@ class Account:
 
     get_lastname():
         Returns the last name of the account user.
-
-    increment_jobs_posted():
-        Increments the count of jobs posted by the user.
     """
 
     def __init__(self):
@@ -72,7 +67,6 @@ class Account:
         self.__password = None
         self.__firstname = None
         self.__lastname = None
-        self.__jobs_posted = 0
         self.__email_ad='1'
         self.__sms_ad='1'
         self.__target_ad='1'
@@ -154,21 +148,8 @@ class Account:
 
         return self.__lastname
 
-    def increment_jobs_posted(self):
-        """Increments the count of jobs posted by the user."""
-        self.__jobs_posted += 1
 
 
-    def get_jobs_posted(self):
-        """
-        Gets the number of jobs the user has posted and returns it.
-
-        Returns
-        -------
-        __jobs_posted : str
-            THe number of jobs the user has posted.
-        """
-        return self.__jobs_posted
     def get_emailAd(self):
         return self.__email_ad
     def get_smsAd(self):
@@ -490,7 +471,7 @@ def create_account():
         print("##      Or Type 'Exit' to return.   ##")
         print("######################################")
         print("")
-        username = input(":: " )
+        username = input(":: ")
         is_incorrect = check_username(username)
 
         if username.upper() == "EXIT":
@@ -552,11 +533,6 @@ def create_job():
         print("All permitted job postings have been created, please come back later.")
         return
 
-    # Check if the user has posted more than five jobs
-    if current_account and current_account.get_jobs_posted() >= 5:
-        print("You have already posted the maximum allowed number of jobs (5).")
-        return
-
     print("")
     print("######################################")
     print("##      Please enter a job title.   ##")
@@ -600,23 +576,20 @@ def create_job():
     print("")
     job_salary = input(":: ")
 
-    jobs.append(Job())
-    jobs[-1].create(job_title, job_desc, job_employer, job_location, job_salary)
-
     if current_account:
+        jobs.append(Job())
+        jobs[-1].create(job_title, job_desc, job_employer, job_location, job_salary)
         first_name = current_account.get_firstname()
         last_name = current_account.get_lastname()
         jobs[-1].set_poster(first_name, last_name)
-        # Increment the number of jobs posted by the current user
-        current_account.increment_jobs_posted()
+
+        print("")
+        print("Job successfully posted!")
     else:
         print("")
         print("You must be logged in to post a job!")
 
     save_jobs()
-
-    print("")
-    print("Job successfully posted!")
 
 def display_jobs():
     """
@@ -748,7 +721,7 @@ def initialize_database():
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS jobs (
-        title TEXT PRIMARY KEY,
+        title TEXT,
         desc TEXT,
         employer TEXT,
         location TEXT,
@@ -1082,25 +1055,25 @@ def useful_links():
         print("##         3. Business Solutions    ##")
         print("##         4. Directories           ##")
         print("##                                  ##")
-        print("##        (E)xit to Main Menu       ##")
+        print("##        (R)eturn to Main Menu     ##")
         print("######################################")
         print("")
 
         user_input = input(":: ")
 
-        if user_input == "1":
+        if user_input[0] == "1":
             general()
 
-        elif user_input == "2":
+        elif user_input[0] == "2":
             browse_incollege()
 
-        elif user_input == "3":
+        elif user_input[0] == "3":
             business_solutions()
 
-        elif user_input == "4":
+        elif user_input[0] == "4":
             directories()
 
-        elif user_input.upper() == "E":
+        elif user_input[0].upper() == "R":
             return
         
         else:
@@ -1132,35 +1105,35 @@ def important_links():
         print("##        9. Guest Controls         ##")
         print("##       10. Languages              ##")
         print("##                                  ##")
-        print("##       (E)xit to Main Menu        ##")
+        print("##       (R)eturn to Main Menu      ##")
         print("######################################")
         print("")
 
         user_input = input(":: ")
 
         if user_input == "1":
-            copyright_notice()
+            print(copyright_notice())
 
         elif user_input == "2":
             about()
 
         elif user_input == "3":
-            accessibility()
+            print(accessibility())
 
         elif user_input == "4":
-            user_agreement()
+            print(user_agreement())
 
         elif user_input == "5":
             privacy_policy()
 
         elif user_input == "6":
-            cookie_policy()
+            print(cookie_policy())
 
         elif user_input == "7":
-            copyright_policy()
+            print(copyright_policy())
         
         elif user_input == "8":
-            brand_policy()
+            print(brand_policy())
 
         elif user_input == "9":
             guest_controls()
@@ -1168,7 +1141,7 @@ def important_links():
         elif user_input == "10":
             languages()
 
-        elif user_input.upper() == "E":
+        elif user_input[0].upper() == "R":
             return
         
         else:
@@ -1216,7 +1189,7 @@ def general():
             print("")
 
         user_input = input(":: ")
-        user_input = user_input.upper()
+        user_input = user_input[0].upper()
 
         if user_input == "S" and current_account == None:
             create_account()
@@ -1267,7 +1240,7 @@ def help_center():
 
         user_input = input(":: ")
 
-        if user_input.upper() == "R":
+        if user_input[0].upper() == "R":
             return
         else:
             print("That is not a valid command!")
@@ -1299,7 +1272,7 @@ def about():
 
         user_input = input(":: ")
 
-        if user_input.upper() == "R":
+        if user_input[0].upper() == "R":
             return
         else:
             print("That is not a valid command!")
@@ -1328,7 +1301,7 @@ def press():
 
         user_input = input(":: ")
 
-        if user_input.upper() == "R":
+        if user_input[0].upper() == "R":
             return
         else:
             print("That is not a valid command!")
@@ -1355,7 +1328,7 @@ def blog():
 
         user_input = input(":: ")
 
-        if user_input.upper() == "R":
+        if user_input[0].upper() == "R":
             return
         else:
             print("That is not a valid command!")
@@ -1382,7 +1355,7 @@ def careers():
 
         user_input = input(":: ")
 
-        if user_input.upper() == "R":
+        if user_input[0].upper() == "R":
             return
         else:
             print("That is not a valid command!")
@@ -1409,7 +1382,7 @@ def developers():
 
         user_input = input(":: ")
 
-        if user_input.upper() == "R":
+        if user_input[0].upper() == "R":
             return
         else:
             print("That is not a valid command!")
@@ -1436,7 +1409,7 @@ def browse_incollege():
 
         user_input = input(":: ")
 
-        if user_input.upper() == "R":
+        if user_input[0].upper() == "R":
             return
         else:
             print("That is not a valid command!")
@@ -1463,7 +1436,7 @@ def business_solutions():
 
         user_input = input(":: ")
 
-        if user_input.upper() == "R":
+        if user_input[0].upper() == "R":
             return
         else:
             print("That is not a valid command!")
@@ -1501,7 +1474,7 @@ Important Link Functions:
 
 def copyright_notice():
     return """
-##############################################
+################################################
 ##             Copyright Notice               ##
 ##                                            ##
 ## All content provided on inCollege,         ##
@@ -1512,12 +1485,12 @@ def copyright_notice():
 ## international copyright laws. The use,     ##
 ## reproduction, and distribution of such     ##
 ## content without permission is prohibited.  ##
-##############################################
+################################################
 """
 
 def accessibility():
     return """
-##############################################
+################################################
 ##             Accessibility                  ##
 ##                                            ##
 ## inCollege is committed to providing an     ##
@@ -1526,13 +1499,13 @@ def accessibility():
 ## services are accessible to individuals     ##
 ## with disabilities. If you encounter any    ##
 ## accessibility issues, please contact our   ##
-## support team to assist you.                 ##
-##############################################
+## support team to assist you.                ##
+################################################
 """
 
 def user_agreement():
     return """
-##############################################
+################################################
 ##           User Agreement                   ##
 ##                                            ##
 ## By using inCollege, you agree to comply    ##
@@ -1542,89 +1515,91 @@ def user_agreement():
 ## conduct, privacy, and content guidelines.  ##
 ## Please read the User Agreement carefully   ##
 ## before using our services.                 ##
-##############################################
+################################################
 """
 
 def privacy_policy():
-    print("\n##############################################")
+    print("\n#############################################")
     print("## You entrust us with your information when ##")
     print("## you use our services. We make a lot of    ##")
     print("## effort to safeguard your information and  ##")
     print("## give you control since we realize that    ##")
-    print("## this is a huge responsibility.             ##")
-    print("##############################################\n")
+    print("## this is a huge responsibility.            ##")
+    print("###############################################\n")
     
     while True:
         if current_account == None:
             print("##############################################")
-            print("##                  Main Menu                ##")
-            print("##           (R)eturn to Previous Menu        ##")
+            print("##                  Main Menu               ##")
+            print("##           (R)eturn to Previous Menu      ##")
             print("##############################################")
-            inp = input()
-            if inp == 'R':
+            print("")
+            inp = input(":: " )
+            if inp[0].upper() == 'R':
                 return
         else:
             print("##############################################")
-            print("##                  Main Menu                ##")
-            print("##           (R)eturn to Previous Menu        ##")
-            print("##           (G)uest Controls                ##")
+            print("##                  Main Menu               ##")
+            print("##           (R)eturn to Previous Menu      ##")
+            print("##           (G)uest Controls               ##")
             print("##############################################")
-            inp = input()
-            if inp == 'R':
+            print("")
+            inp = input(":: " )
+            if inp[0].upper() == 'R':
                 return
-            elif inp == 'G':
+            elif inp[0].upper() == 'G':
                 guest_controls()
 
 def cookie_policy():
     return """
-##############################################
+################################################
 ##           Cookie Policy                    ##
 ##                                            ##
 ## inCollege uses cookies to enhance user     ##
 ## experience and provide personalized        ##
 ## content and ads. By using our platform,    ##
-## you consent to the use of cookies in      ##
+##  you consent to the use of cookies in      ##
 ## accordance with our Cookie Policy. To      ##
 ## learn more, please review our Cookie       ##
 ## Policy on our website.                     ##
-##############################################
+################################################
 """
     
 def copyright_policy():
     return """
-##############################################
+################################################
 ##         Copyright Policy                   ##
 ##                                            ##
 ## inCollege respects the intellectual        ##
 ## property rights of others. If you believe  ##
 ## that your copyrighted work has been used   ##
-## in a way that constitutes copyright       ##
+## in a way that constitutes copyright        ##
 ## infringement, please contact us with       ##
 ## relevant details. We will investigate and  ##
-## take appropriate action.                    ##
-##############################################
+## take appropriate action.                   ##
+################################################
 """
 
 def brand_policy():
     return """
-##############################################
+################################################
 ##           Brand Policy                     ##
 ##                                            ##
 ## Our Brand Policy outlines the guidelines   ##
 ## for using inCollege's brand assets,        ##
 ## including logos and trademarks. To         ##
-## maintain the integrity of our brand,      ##
+## maintain the integrity of our brand,       ##
 ## please adhere to our brand guidelines      ##
 ## when using inCollege's branding elements.  ##
 ## For specific details, refer to our Brand   ##
 ## Policy available on our website.           ##
-##############################################
-""" 
+################################################
+"""
 
 def guest_controls():
     if current_account == None:
         print("\n##############################################")
-        print("##          Guest Controls: Information        ##")
+        print("##          Guest Controls: Information       ##")
         print("## Guest Controls helps our users turn off    ##")
         print("## advertising alerts. Kindly login to use    ##")
         print("## this feature.                              ##")
@@ -1634,15 +1609,15 @@ def guest_controls():
     while True:
         current_account.preferences()
         print("##############################################")
-        print("##            Guest Controls Menu            ##")
-        print("##    1. Turn off email advertising.          ##")
-        print("##    2. Turn off SMS advertising.            ##")
-        print("##    3. Turn off targeted advertising.      ##")
-        print("##    (R)eturn to Previous Menu               ##")
+        print("##            Guest Controls Menu           ##")
+        print("##    1. Turn off email advertising.        ##")
+        print("##    2. Turn off SMS advertising.          ##")
+        print("##    3. Turn off targeted advertising.     ##")
+        print("##    (R)eturn to Previous Menu             ##")
         print("##############################################\n")
-        
-        inp = input()
-        if inp.upper() == 'R':
+        print("")
+        inp = input(":: " )
+        if inp[0].upper() == 'R':
             return
         elif inp == '1':
             current_account.update_ad(email=False)
@@ -1665,14 +1640,14 @@ def languages():
     while True:
         current_account.show_language()
         print("##############################################")
-        print("##           Language Preferences Menu        ##")
+        print("##           Language Preferences Menu       ##")
         print("##  1. English                               ##")
         print("##  2. Spanish                               ##")
         print("##  (R)eturn to Previous Menu                ##")
         print("##############################################\n")
-        
-        inp = input()
-        if inp.upper() == 'R':
+        print("")
+        inp = input(">> ")
+        if inp[0].upper() == 'R':
             return
         elif inp == '1':
             current_account.update_language(english=True)
@@ -1681,9 +1656,12 @@ def languages():
         else:
             print("Invalid input")
 
-def user_menu():
-
+def unset_current_account():
+    """ Unsets the current account"""
     global current_account
+    current_account = None
+
+def user_menu():
 
     """ 
     Menu Loop for user menu after login.
@@ -1729,7 +1707,7 @@ def user_menu():
             learn_skill()
         
         elif main_input == "R":
-            current_account = None  ## log out of current_account
+            unset_current_account()  ## log out of current_account
             return
         
         elif main_input == "U":

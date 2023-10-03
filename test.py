@@ -1,156 +1,384 @@
 import pytest
-import io
-from io import StringIO
-import sys
+import os
 from main import *
-from unittest.mock import patch
 
-@pytest.fixture(scope="module")
-def mock_stdout():
-    mock_output = StringIO()
-    yield mock_output
-    mock_output.close()
+## VALUES FOR TESTING ##
 
-@pytest.fixture(scope="module")
-def monkeypatch():
-    from _pytest.monkeypatch import MonkeyPatch
-    mpatch = MonkeyPatch()
-    yield mpatch
-    mpatch.undo()
+@pytest.fixture
+def good_username():
+    return "TestUser"
 
-@pytest.fixture(scope="module")
-def setup_accounts():
-    accounts = []
-    test_account = Account()
-    test_account.create("TestUser", "Test123!", "Test", "User", "test.user@gmail.com", "1234567890", "Target", "English")
-    accounts.append(test_account)
-    yield accounts
-    accounts.remove(test_account)
+@pytest.fixture
+def bad_username():
+    return "username"
 
-def test_check_username_and_password():
-    accounts.append(Account())
-    accounts[-1].create(
-        "TestUser", "Test123!", "Test", "User",
-        "test.user@gmail.com", "1234567890", "Target", "English"
-    )
+@pytest.fixture
+def firstname():
+    return "Tester"
 
-    assert check_username("TestUser") == True
-    assert check_password("TestUser", "Test123!") == True
-    assert check_username("NonExistentUser") == False
-    assert check_password("TestUser", "WrongPassword") == False
+@pytest.fixture
+def lastname():
+    return "McTestson"
 
-def test_get_account():
-    accounts.append(Account())
-    accounts[-1].create("TestUser", "Test123!", "Test", "User", "test.user@gmail.com", "1234567890", "Target", "English")
+@pytest.fixture
+def good_pass():
+    return "Test123!"
 
-    assert get_account("TestUser") >= 0
-    assert get_account("NonExistentUser") == -1
+@pytest.fixture
+def small_pass():
+    return "Tes7."
 
-def test_login_success(capsys, monkeypatch):
-    input_values = ["TestUser", "Test123!"]
+@pytest.fixture
+def long_pass():
+    return "TooL0ngPassword!"
+
+@pytest.fixture
+def no_cap_pass():
+    return "test123!"
+
+@pytest.fixture
+def no_dig_pass():
+    return "Testers!"
+
+@pytest.fixture
+def no_sym_pass():
+    return "test123s"
+
+@pytest.fixture
+def job_title():
+    return "Code Tester"
+
+@pytest.fixture
+def job_desc():
+    return "You Test Code!"
+
+@pytest.fixture
+def job_employer():
+    return "TestLabs"
+
+@pytest.fixture
+def job_location():
+    return "Test Location"
+
+@pytest.fixture
+def job_salary():
+    return "73,575"
+
+@pytest.fixture
+def exit_key():
+    return "Exit"
+
+@pytest.fixture
+def return_key():
+    return "R"
+
+######## USER INPUTS ###########
+
+@pytest.fixture
+def inputs():
+    return []
+
+@pytest.fixture
+def user_input_account(inputs, good_username, good_pass, firstname, lastname):
+    inputs.append(good_username)
+    inputs.append(good_pass)
+    inputs.append(firstname)
+    inputs.append(lastname)
+
+@pytest.fixture
+def user_input_account_bad(inputs, good_username, exit_key):
+    inputs.append(good_username)
+    inputs.append(exit_key)
+
+@pytest.fixture
+def user_input_login_good(inputs, good_username, good_pass):
+    inputs.append(good_username)
+    inputs.append(good_pass)
+
+@pytest.fixture
+def user_input_login_bad(inputs, bad_username, good_pass, exit_key):
+    inputs.append(bad_username)
+    inputs.append(good_pass)
+    inputs.append(exit_key)
+
+@pytest.fixture
+def user_input_login_on_second_attempt(inputs, bad_username, good_pass, good_username):
+    inputs.append(bad_username)
+    inputs.append(good_pass)
+    inputs.append(good_username)
+    inputs.append(good_pass)
+
+@pytest.fixture
+def user_input_job(inputs, job_title, job_desc, job_employer, job_location, job_salary, good_username, good_pass):
+    inputs.append(good_username)
+    inputs.append(good_pass)
+    inputs.append(job_title)
+    inputs.append(job_desc)
+    inputs.append(job_employer)
+    inputs.append(job_location)
+    inputs.append(job_salary)
+
+@pytest.fixture
+def user_input_job_bad(inputs, job_title, job_desc, job_employer, job_location, job_salary, good_username, good_pass):
+    inputs.append(job_title)
+    inputs.append(job_desc)
+    inputs.append(job_employer)
+    inputs.append(job_location)
+    inputs.append(job_salary)
+
+@pytest.fixture
+def user_input_return(inputs, return_key):
+    inputs.append(return_key)
+
+
+############## USEFUL FIXTURES ########################
     
+## Run this when you work with the database!
+@pytest.fixture
+def setup_and_teardown():
+    ## Set up a clean environment before each test
+
+    # Changes the main database, so it won't be written over.
+    try:
+        os.rename("accounts.db", "accounts-main.db")
+    except FileNotFoundError:
+        pass
+
+    #loads the database
+    initialize_database()
+
+    load_accounts()
+    load_jobs()
+
+    #waits for test to end
+    yield
+
+    ## Clean up after each test
+    save_accounts()
+
+    # Deletes the testing database
+    try:
+        os.remove("accounts.db")
+    except OSError:
+        pass
+
+    # Changes the main database back.
+    try:
+        os.rename("accounts-main.db", "accounts.db")
+    except FileNotFoundError:
+        pass
+    ## Clear accounts when done
+    accounts.clear()
+    jobs.clear()
+
+# This creates a prefab account
+@pytest.fixture
+def prefab_account(good_username, good_pass, firstname, lastname):
+    accounts.append(Account())
+    accounts[-1].create(good_username, good_pass, firstname, lastname, '1', '1', '1', "English")
+
+    yield
+    ## Clear accounts when done
+    accounts.clear()
+    unset_current_account()
+
+# This creates the maximun number of prefab accounts
+@pytest.fixture
+def fill_accounts(good_username, good_pass, firstname, lastname):
+    for i in range(MAX_ACC):
+        accounts.append(Account())
+        accounts[-1].create(good_username+str(i), good_pass, firstname+str(i), lastname+str(i), '1', '1', '1', "English")
+
+    yield
+    ## Clear accounts when done
+    accounts.clear()
+    unset_current_account()
+
+
+# This creates a prefab job
+@pytest.fixture
+def prefab_job(job_title, job_desc, job_employer, job_location, job_salary, firstname, lastname):
+    jobs.append(Job())
+    jobs[-1].create(job_title, job_desc, job_employer, job_location, job_salary)
+    jobs[-1].set_poster(firstname, lastname)
+
+    yield
+    ## Clear jobs when done
+    jobs.clear()
+
+# This creates the maximun number of prefab jobs
+@pytest.fixture
+def fill_jobs(good_username, good_pass, firstname, lastname):
+    for i in range(MAX_JOB):
+        jobs.append(Job())
+        jobs[-1].create(job_title, job_desc, job_employer, job_location, job_salary)
+        jobs[-1].set_poster(firstname, lastname)
+
+    yield
+    ## Clear jobs when done
+    jobs.clear()
+
+#This changes the input module so it takes a set input, call this with one of the user inputs above!
+@pytest.fixture
+def mock_inputs(monkeypatch, inputs):
+    # Provide user input for username and password
+    input_values = inputs
+
+    # Monkeypatch the input function to simulate user input
     def mock_input(prompt):
         return input_values.pop(0)
     monkeypatch.setattr('builtins.input', mock_input)
 
-    login()
 
+############## TESTS ##################################
+
+# Test getting an account by username
+def test_get_account(prefab_account, good_username, bad_username):
+
+    # Get the account by username
+    assert get_account(good_username) >= 0
+    assert get_account(bad_username) == -1
+
+
+def test_create_account(setup_and_teardown, mock_inputs, capsys, user_input_account):
+    
+    # Run the create account function
+    create_account()
+
+    # Capture the printed output
     captured = capsys.readouterr()
 
-    assert "You have successfully logged in." in captured.out
+    # Check if the login was successful
+    assert "Account successfully created!" in captured.out
 
-def test_login_failure(capsys, monkeypatch):
-    input_values = ["TestUser", "WrongPassword", "Exit"]
+def test_create_account_with_same_username(setup_and_teardown, prefab_account, mock_inputs, capsys, user_input_account_bad):
     
-    def mock_input(prompt):
-        return input_values.pop(0)
-    monkeypatch.setattr('builtins.input', mock_input)
+    # Run the create account function
+    create_account()
 
-    login()
-
+    # Capture the printed output
     captured = capsys.readouterr()
 
-    assert "Incorrect username / password, please try again." in captured.out
+    # Check if the login was successful
+    assert "Username invalid! Username already exists!" in captured.out
 
-def test_valid_password():
-    assert check_valid_password("Test123$") == False
-
-def test_invalid_length():
-    assert check_valid_password("Test1") == True
-    assert check_valid_password("TooLongPassword") == True
-
-def test_no_capital():
-    assert check_valid_password("test123$") == True
-
-def test_no_digit():
-    assert check_valid_password("TestPassword$") == True
-
-def test_play_video(capsys, monkeypatch):
-    def mock_input(prompt):
-        return ""
+def test_create_account_when_max(setup_and_teardown, fill_accounts, mock_inputs, capsys, user_input_account):
     
-    monkeypatch.setattr('builtins.input', mock_input)
+    # Run the create account function
+    create_account()
 
-    play_video()
+    # Capture the printed output
+    captured = capsys.readouterr()
 
-    out, err = capsys.readouterr()
+    # Check if the login was successful
+    assert "All permitted accounts have been created, please come back later." in captured.out
 
-    assert "Video is now playing." in out
-    assert "Press 'enter' to continue." in out
 
-def test_play_video_input(capsys, monkeypatch):
-    def mock_input(prompt):
-        return "x"
-    
-    monkeypatch.setattr('builtins.input', mock_input)
+def test_create_job(setup_and_teardown, mock_inputs, capsys, prefab_account, user_input_job):
+    # login to a account
+    login()
 
-    play_video()
-
-    out, err = capsys.readouterr()
-
-    assert "Video is now playing." in out
-    assert "Press 'enter' to continue." in out
-
-def test_create_job_max_jobs_per_user(monkeypatch):
-    jobs = []
-
-    inputs = ["Software Engineer", "Design software", "Google", "Mountain View", "120,000"]
-    def mock_input(prompt):
-        return inputs.pop(0)
-    monkeypatch.setattr('builtins.input', mock_input)
-
-    test_account = Account()
-    test_account.create("TestUser", "Test123!", "Test", "User", "test.user@gmail.com", "1234567890", "Target", "English")
-
-    for _ in range(5):
-        test_account.increment_jobs_posted()
-
+    # Run the create account function
     create_job()
 
-    assert len(jobs) == 0
+    # Capture the printed output
+    captured = capsys.readouterr()
 
-def test_display_jobs(capsys):
-    display_jobs()
-    
-    out, err = capsys.readouterr()
-    
-    assert out == "Under construction!\n"
+    # Check if the login was successful
+    assert "Job successfully posted!" in captured.out
 
-def copyright_notice():
-    return """
-##############################################
-##             Copyright Notice               ##
-##                                            ##
-## All content provided on inCollege,         ##
-## including but not limited to text,         ##
-## graphics, logos, images, and software,     ##
-## is the property of inCollege or its        ##
-## content suppliers and is protected by      ##
-## international copyright laws. The use,     ##
-## reproduction, and distribution of such     ##
-## content without permission is prohibited.  ##
-##############################################
-"""
+def test_create_job_when_not_log_in(setup_and_teardown, mock_inputs, capsys, user_input_job_bad):
+
+    # Run the create account function
+    create_job()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    # Check if the login was successful
+    assert "You must be logged in to post a job!" in captured.out
+
+def test_create_job_when_max(setup_and_teardown, fill_jobs, prefab_account, mock_inputs, capsys, user_input_job):
+    # login to a account
+    login()
+
+    # Run the create account function
+    create_job()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    # Check if the login was successful
+    assert "All permitted job postings have been created, please come back later." in captured.out
+
+
+# Test with valid password
+def test_valid_password(good_pass):
+    assert check_valid_password(good_pass) == False
+
+# Test with invalid length 
+def test_invalid_length(small_pass, long_pass):
+    assert check_valid_password(small_pass) == True
+    assert check_valid_password(long_pass) == True
+
+# Test without capital letter
+def test_no_capital(no_cap_pass):
+    assert check_valid_password(no_cap_pass) == True
+
+# Test without digit  
+def test_no_digit(no_dig_pass):
+    assert check_valid_password(no_dig_pass) == True
+
+# Test without symbol
+def test_no_symbol(no_sym_pass):
+    assert check_valid_password(no_sym_pass) == True
+
+
+# Test the login function
+def test_login_success(prefab_account, mock_inputs, capsys, user_input_login_good):
+
+    # Run the login function
+    login()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    # Check if the login was successful
+    assert "You have successfully logged in." in captured.out
+
+def test_login_failure(prefab_account, mock_inputs, capsys, user_input_login_bad):
+
+    # Run the login function
+    login()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    # Check if the login was successful
+    assert "Incorrect username / password, please try again." in captured.out
+
+def test_login_on_next_attempt(prefab_account, mock_inputs, capsys, user_input_login_on_second_attempt):
+
+    # Run the login function
+    login()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    # Check if the login was successful
+    assert "You have successfully logged in." in captured.out
+
+def test_play_video_input(capsys, mock_inputs, user_input_return):
+
+    # Call play_video function
+    play_video()
+    
+    # Capture stdout
+    captured = capsys.readouterr()
+    
+    # Check output
+    assert "Video is now playing." in captured.out
+    assert "Press 'enter' to continue." in captured.out
 
 def test_copyright_notice():
     result = copyright_notice()
@@ -167,20 +395,16 @@ def test_user_agreement():
     assert "User Agreement" in result
     assert "By using inCollege, you agree to comply" in result
 
-def test_privacy_policy(capsys):
-    # Mock user input to simulate "R" for returning to the previous menu
-    input_values = ["R"]
+def test_privacy_policy(capsys, mock_inputs, user_input_return):
 
-    with patch('builtins.input', side_effect=input_values):
-        # Call the privacy_policy function
-        privacy_policy()
+    privacy_policy()
 
-        # Capture the printed output
-        captured = capsys.readouterr()
+    # Capture the printed output
+    captured = capsys.readouterr()
 
-        # Check if the expected content is present in the output
-        assert "You entrust us with your information" in captured.out
-        assert "this is a huge responsibility." in captured.out
+    # Check if the expected content is present in the output
+    assert "You entrust us with your information" in captured.out
+    assert "this is a huge responsibility." in captured.out
 
 def test_cookie_policy():
     result = cookie_policy()
@@ -196,4 +420,3 @@ def test_brand_policy():
     result = brand_policy()
     assert "Brand Policy" in result
     assert "Our Brand Policy outlines the guidelines" in result
-
