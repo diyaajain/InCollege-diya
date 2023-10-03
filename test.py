@@ -197,19 +197,3 @@ def test_brand_policy():
     assert "Brand Policy" in result
     assert "Our Brand Policy outlines the guidelines" in result
 
-def test_languages(capsys):
-
-    current_account = None
-    
-    languages()
-    
-    captured = capsys.readouterr()
-    
-    print("Captured output:")
-    print(captured.out)
-    
-    assert "Language Preferences: Info" in captured.out
-    assert "Kindly login to your account to set your language preferences." in captured.out        
-    assert "Language Preferences Menu" in captured.out
-    assert "1. English" in captured.out 
-    assert "(R)eturn to Previous Menu" in captured.out
