@@ -217,6 +217,7 @@ class Account:
         conn.commit()
         conn.close()
 
+
 class Job:
     """ 
     A class to store the information of each job posting.
@@ -339,6 +340,8 @@ class Job:
         self.__firstname = fname
         self.__lastname = lname
 
+
+
 def check_name(firstname, lastname):
     """
     Checks if the first and last name alread exists in the database.
@@ -366,6 +369,7 @@ def check_name(firstname, lastname):
                 return acc.get_username()
     return "EXIT"     
 
+
 def check_password(usrn, pswd):
     """
     Checks if the username alread exists in the database.
@@ -391,6 +395,8 @@ def check_password(usrn, pswd):
                 return True                                                
     return False
 
+
+
 def check_username(usrn):
     """
     Checks if the username alread exists in the database.
@@ -412,6 +418,8 @@ def check_username(usrn):
                 return True                 
             
     return False
+
+
 
 def check_valid_password(pswd):
     """ 
@@ -463,6 +471,8 @@ def check_valid_password(pswd):
     if not is_symbol:
         print("Password is missing a symbol!")
     return True
+
+
 
 def create_account():
     """ 
@@ -535,6 +545,8 @@ def create_account():
 
     print("")
     print("Account successfully created!")
+
+
 
 def create_job():
     """ 
@@ -618,6 +630,8 @@ def create_job():
     print("")
     print("Job successfully posted!")
 
+
+
 def display_jobs():
     """
     Todo.
@@ -628,6 +642,9 @@ def display_jobs():
         returns back to jobs menu after completion.
     """
     print("Under construction!")
+
+
+
 
 def find_person():
     """
@@ -682,6 +699,8 @@ def find_person():
 
     input(">> ")
 
+
+
 def get_account(usrn):
     """
     Checks if the account exists based on the supplied username.
@@ -703,6 +722,8 @@ def get_account(usrn):
             if accounts[i].get_username() == usrn:          
                 return i                              
     return -1
+
+
 
 def get_empty_slot():
     """ 
@@ -726,6 +747,8 @@ def get_empty_slot():
         return accounts.index(None)
     except ValueError:
         return -1
+
+
 
 def initialize_database():
     """Initalizes the database, must be run at start-up."""
@@ -760,6 +783,8 @@ def initialize_database():
 
     connection.commit()
     connection.close()
+
+
 
 def learn_skill():
     """ 
@@ -813,6 +838,8 @@ def learn_skill():
         else:
             print ("That is not a valid command!")
 
+
+
 def load_accounts():
     """Loads all the currently existing accounts from the SQLite database on start-up."""
     connection = sqlite3.connect("accounts.db")
@@ -826,6 +853,8 @@ def load_accounts():
         load_account_data(acc_data)
   
     connection.close()
+
+
 
 def load_account_data(data):
     """ 
@@ -841,6 +870,8 @@ def load_account_data(data):
         accounts.append(Account())  # Append a new Account instance
         accounts[-1].create(data[0], data[1], data[2], data[3],data[4],data[5],data[6],data[7])  # Provide the 'username', 'password', 'firstname', 'lastname' arguments
 
+
+
 def load_jobs():
     """Loads all the currently existing job postings from the SQLite database on start-up."""
     connection = sqlite3.connect("accounts.db")
@@ -854,6 +885,8 @@ def load_jobs():
         load_job_data(job_data)
   
     connection.close()
+
+
 
 def load_job_data(data):
     """ 
@@ -869,7 +902,9 @@ def load_job_data(data):
         jobs.append(Job())  # Append a new Account instance
         jobs[-1].create(data[0], data[1], data[2], data[3], data[4])  # Provide the 'title', 'description', 'employer', 'location', 'salary' arguments
         jobs[-1].set_poster(data[5], data[6])   # Provide the 'firstname' and 'lastname' arguments
-      
+
+
+        
 def login():
     """ 
     Menu loop for logging in,
@@ -915,6 +950,8 @@ def login():
             print("Incorrect username / password, please try again.")
     return
 
+
+
 def menu_message():
     """Displays a message on the main menu."""
 
@@ -927,6 +964,8 @@ def menu_message():
 
     print("\nIf you would you like to watch a video about why you should")
     print(" join InCollege, please enter (V). \n")       
+
+
 
 def play_video():
     """Plays a video."""
@@ -955,6 +994,8 @@ def save_accounts():
     connection.commit()
     connection.close()
 
+
+
 def save_jobs():
     """Saves all currently existing jobs to the SQLite database."""
     connection = sqlite3.connect("accounts.db")
@@ -970,6 +1011,8 @@ def save_jobs():
 
     connection.commit()
     connection.close()
+
+
 
 def search_job():
     """
@@ -1005,6 +1048,8 @@ def search_job():
         else:
             print ("That is not a valid command!")
             print("")  
+
+
 
 def search_user():
     """
@@ -1062,6 +1107,8 @@ def search_user():
 
     input(">> ")
 
+
+
 def useful_links():
 
     '''
@@ -1105,6 +1152,8 @@ def useful_links():
         
         else:
             print("That is not a valid command!")
+
+
 
 def important_links():
 
@@ -1173,6 +1222,8 @@ def important_links():
         
         else:
             print("That is not a valid command!")
+
+
 
 def general():
 
@@ -1245,6 +1296,8 @@ def general():
         else:
             print("That is not a valid command!")
 
+
+
 def help_center():
     
     '''
@@ -1271,6 +1324,8 @@ def help_center():
             return
         else:
             print("That is not a valid command!")
+
+
 
 def about():
 
@@ -1304,6 +1359,8 @@ def about():
         else:
             print("That is not a valid command!")
 
+
+
 def press():
 
     '''
@@ -1333,6 +1390,8 @@ def press():
         else:
             print("That is not a valid command!")
 
+
+
 def blog():
 
     '''
@@ -1359,6 +1418,8 @@ def blog():
             return
         else:
             print("That is not a valid command!")
+
+
 
 def careers():
 
@@ -1387,6 +1448,8 @@ def careers():
         else:
             print("That is not a valid command!")
 
+
+
 def developers():
 
     '''
@@ -1413,6 +1476,8 @@ def developers():
             return
         else:
             print("That is not a valid command!")
+
+
 
 def browse_incollege():
 
@@ -1441,6 +1506,8 @@ def browse_incollege():
         else:
             print("That is not a valid command!")
 
+
+
 def business_solutions():
 
     '''
@@ -1467,6 +1534,8 @@ def business_solutions():
             return
         else:
             print("That is not a valid command!")
+
+
 
 def directories():
 
@@ -1495,12 +1564,14 @@ def directories():
         else:
             print("That is not a valid command!")
 
+
+
 '''
 Important Link Functions:
 '''
 
 def copyright_notice():
-    print("""
+    return """
 ##############################################
 ##             Copyright Notice               ##
 ##                                            ##
@@ -1513,10 +1584,10 @@ def copyright_notice():
 ## reproduction, and distribution of such     ##
 ## content without permission is prohibited.  ##
 ##############################################
-""")
+"""
 
 def accessibility():
-    print("""
+    return """
 ##############################################
 ##             Accessibility                  ##
 ##                                            ##
@@ -1528,10 +1599,10 @@ def accessibility():
 ## accessibility issues, please contact our   ##
 ## support team to assist you.                 ##
 ##############################################
-""")
+"""
 
 def user_agreement():
-    print("""
+    return """
 ##############################################
 ##           User Agreement                   ##
 ##                                            ##
@@ -1543,7 +1614,7 @@ def user_agreement():
 ## Please read the User Agreement carefully   ##
 ## before using our services.                 ##
 ##############################################
-""")
+"""
 
 def privacy_policy():
     print("\n##############################################")
@@ -1576,7 +1647,7 @@ def privacy_policy():
                 guest_controls()
 
 def cookie_policy():
-    print("""
+    return """
 ##############################################
 ##           Cookie Policy                    ##
 ##                                            ##
@@ -1588,10 +1659,10 @@ def cookie_policy():
 ## learn more, please review our Cookie       ##
 ## Policy on our website.                     ##
 ##############################################
-""")
+"""
     
 def copyright_policy():
-    print("""
+    return """
 ##############################################
 ##         Copyright Policy                   ##
 ##                                            ##
@@ -1603,10 +1674,10 @@ def copyright_policy():
 ## relevant details. We will investigate and  ##
 ## take appropriate action.                    ##
 ##############################################
-""")
+"""
 
 def brand_policy():
-    print("""
+    return """
 ##############################################
 ##           Brand Policy                     ##
 ##                                            ##
@@ -1619,7 +1690,7 @@ def brand_policy():
 ## For specific details, refer to our Brand   ##
 ## Policy available on our website.           ##
 ##############################################
-""")
+""" 
 
 def guest_controls():
     if current_account == None:
@@ -1642,7 +1713,7 @@ def guest_controls():
         print("##############################################\n")
         
         inp = input()
-        if inp == 'R':
+        if inp.upper() == 'R':
             return
         elif inp == '1':
             current_account.update_ad(email=False)
@@ -1650,6 +1721,8 @@ def guest_controls():
             current_account.update_ad(sms=False)
         elif inp == '3':
             current_account.update_ad(target=False)
+        else:
+            print("Invalid input")
 
 def languages():
     if current_account == None:
@@ -1670,12 +1743,16 @@ def languages():
         print("##############################################\n")
         
         inp = input()
-        if inp == 'R':
+        if inp.upper() == 'R':
             return
         elif inp == '1':
             current_account.update_language(english=True)
         elif inp == '2':
             current_account.update_language(spanish=True)
+        else:
+            print("Invalid input")
+
+
 
 def user_menu():
 
@@ -1737,6 +1814,8 @@ def user_menu():
         else:
             print ("That is not a valid command!") 
 
+
+
 def main():
     """Menu Loop for main menu."""
     initialize_database()
@@ -1795,6 +1874,8 @@ def main():
 
         else:
             print ("That is not a valid command!")
+
+
 
 if __name__ == "__main__":
     main()
