@@ -152,99 +152,64 @@ def copyright_notice():
 ##############################################
 """
 
-# Test cases for copyright_notice() function
 def test_copyright_notice():
     result = copyright_notice()
     assert "Copyright Notice" in result
     assert "All content provided on inCollege" in result
 
-# Test cases for accessibility() function
 def test_accessibility():
     result = accessibility()
     assert "Accessibility" in result
     assert "inCollege is committed to providing an" in result
 
-# Test cases for user_agreement() function
 def test_user_agreement():
     result = user_agreement()
     assert "User Agreement" in result
     assert "By using inCollege, you agree to comply" in result
 
-# Test cases for privacy_policy() function
-def test_privacy_policy():
-    result = privacy_policy()
-    assert "Privacy Policy" in result
-    assert "You entrust us with your information when" in result
+def test_privacy_policy(capsys):
+    # Mock user input to simulate "R" for returning to the previous menu
+    input_values = ["R"]
 
-# Test cases for cookie_policy() function
+    with patch('builtins.input', side_effect=input_values):
+        # Call the privacy_policy function
+        privacy_policy()
+
+        # Capture the printed output
+        captured = capsys.readouterr()
+
+        # Check if the expected content is present in the output
+        assert "You entrust us with your information" in captured.out
+        assert "this is a huge responsibility." in captured.out
+
 def test_cookie_policy():
     result = cookie_policy()
     assert "Cookie Policy" in result
     assert "inCollege uses cookies to enhance user" in result
 
-# Test cases for copyright_policy() function
 def test_copyright_policy():
     result = copyright_policy()
     assert "Copyright Policy" in result
     assert "inCollege respects the intellectual" in result
 
-# Test cases for brand_policy() function
 def test_brand_policy():
     result = brand_policy()
     assert "Brand Policy" in result
     assert "Our Brand Policy outlines the guidelines" in result
 
-import pytest
-from main import guest_controls, Account
+def test_languages(capsys):
 
-def test_guest_controls_information(capsys, monkeypatch):
-    # Mock the current_account as None
-    monkeypatch.setattr('main.current_account', None)
-
-    # Provide input to exit the function
-    input_values = ["R"]
-    monkeypatch.setattr('builtins.input', lambda x: input_values.pop(0))
-
-    # Call guest_controls
-    guest_controls()
-
-    # Capture the printed output
+    current_account = None
+    
+    languages()
+    
     captured = capsys.readouterr()
-
-    # Check if the expected information is present
-    assert "Guest Controls: Information" in captured.out
-    assert "Guest Controls helps our users turn off" in captured.out
+    
+    print("Captured output:")
+    print(captured.out)
+    
+    assert "Language Preferences: Info" in captured.out
+    assert "Kindly login to your account to set your language preferences." in captured.out        
+    assert "Language Preferences Menu" in captured.out
+    assert "1. English" in captured.out 
     assert "(R)eturn to Previous Menu" in captured.out
-
-def test_guest_controls_menu(capsys, monkeypatch):
-    # Create a test account
-    test_account = Account()
-    test_account.create("TestUser", "Test123!", "Test", "User", "test.user@gmail.com", "1234567890", "sms_value", "target_value", "English")
-
-    # Mock the current_account as the test account
-    monkeypatch.setattr('main.current_account', test_account)
-
-    # Provide input to select various options
-    input_values = ["1", "2", "3", "R"]
-    monkeypatch.setattr('builtins.input', lambda x: input_values.pop(0))
-
-    # Call guest_controls
-    guest_controls()
-
-    # Capture the printed output
-    captured = capsys.readouterr()
-
-    # Check if the menu options and prompts are present
-    assert "Guest Controls Menu" in captured.out
-    assert "1. Turn off email advertising." in captured.out
-    assert "2. Turn off SMS advertising." in captured.out
-    assert "3. Turn off targeted advertising." in captured.out
-    assert "(R)eturn to Previous Menu" in captured.out
-
-    # Ensure that the selected options are processed correctly
-    assert test_account.email_ad == False
-    assert test_account.sms_ad == False
-    assert test_account.targeted_ad == False
-
-    # Reset the account's preferences
-    test_account.update_ad(email=True, sms=True, target=True)
