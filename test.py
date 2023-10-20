@@ -180,6 +180,32 @@ def user_input_privacy(inputs, good_username, good_pass, return_key):
     inputs.append(return_key)
 
 @pytest.fixture
+def user_input_send_request(inputs, good_username, good_pass, firstname, lastname, return_key):
+    inputs.append(good_username+"0")
+    inputs.append(good_pass)
+    inputs.append("F")
+    inputs.append(firstname+"1")
+    inputs.append(lastname+"1")
+    inputs.append("S")
+    inputs.append(return_key)
+
+@pytest.fixture
+def user_input_accept_request(inputs, good_username, good_pass, firstname, lastname, return_key):
+    inputs.append(good_username+"1")
+    inputs.append(good_pass)
+    inputs.append("F")
+    inputs.append(firstname+"0")
+    inputs.append(lastname+"0")
+    inputs.append("S")
+    inputs.append(return_key)
+    inputs.append(good_username+"0")
+    inputs.append(good_pass)
+    inputs.append("A")
+    inputs.append(return_key)
+
+
+
+@pytest.fixture
 def user_input_return(inputs, return_key):
     inputs.append(return_key)
 
@@ -228,7 +254,7 @@ def setup_and_teardown():
 @pytest.fixture
 def prefab_account(good_username, good_pass, firstname, lastname):
     accounts.append(Account())
-    accounts[-1].create(good_username, good_pass, firstname, lastname, '1', '1', '1', "English")
+    accounts[-1].create(good_username, good_pass, firstname, lastname, '1', '1', '1', "English", "", "")
 
     yield
     ## Clear accounts when done
@@ -240,7 +266,7 @@ def prefab_account(good_username, good_pass, firstname, lastname):
 def fill_accounts(good_username, good_pass, firstname, lastname):
     for i in range(MAX_ACC):
         accounts.append(Account())
-        accounts[-1].create(good_username+str(i), good_pass, firstname+str(i), lastname+str(i), '1', '1', '1', "English")
+        accounts[-1].create(good_username+str(i), good_pass, firstname+str(i), lastname+str(i), '1', '1', '1', "English", "", "")
 
     yield
     ## Clear accounts when done
@@ -278,7 +304,7 @@ def mock_inputs(monkeypatch, inputs):
     input_values = inputs
 
     # Monkeypatch the input function to simulate user input
-    def mock_input(prompt):
+    def mock_input(prompt=None):
         return input_values.pop(0)
     monkeypatch.setattr('builtins.input', mock_input)
 
@@ -581,3 +607,28 @@ def test_find_person_bad(prefab_account, mock_inputs, capsys, user_input_find_pe
 
     assert "This person is not a member of" in captured.out
 
+
+def test_send_friend_request(fill_accounts, mock_inputs, capsys, user_input_send_request, good_username):
+
+    login()
+
+    user_menu()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    assert "Sent friend request to  "+good_username+"1" in captured.out
+
+
+def test_accept_friend_request(fill_accounts, mock_inputs, capsys, user_input_accept_request, good_username):
+
+    login()
+
+    user_menu()
+
+    login()
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    assert "You have a new friend request:  "+good_username+"1" in captured.out
