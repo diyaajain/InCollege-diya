@@ -2,6 +2,45 @@ import pytest
 import os
 from main import *
 
+## HOW TO MAKE TEST CASES ##
+
+# 1. If your test case needs to access the database for any reason, call the 'setup_and_teardown' fixture
+#    as an argument.  
+#
+# 2. If you need a string to test, and the criteria for the string may change in the future;
+#    then make a new VALUE fixture in the section "VALUES FOR TESTING" if said string doesn't
+#    already exist.
+#
+# 3. If your test case requires the need for user input, call the 'mock_inputs' fixture and one of
+#    the USER INPUT fixtures from the section "USER INPUTS" as an argument. 
+#
+# 4. If you need a new USER INPUT fixture, create one by calling the 'inputs' fixture as an argument, and any
+#    of the VALUES fixtures you need. Then call 'inputs.append(VALUES or string)' In the EXACT ORDER that a user 
+#    would input the value normally. DO NOT USE MORE INPUTS THEN NEEDED FOR THE TEST.
+#
+# 5. If making a test case that utilizes a working account, call the 'prefab_account' fixture as an argument. 
+#    The username of the account is 'good_username' password is 'good_pass' firstname is 'firstname' and lastname 
+#    is 'lastname'.
+#
+# 6. If you need to be logged into an account, call the 'prefab_account' and 'mock-inputs' fixture as an argument.
+#    Make sure your USER INPUT starts with 'good_username' and 'good_pass' as the inputs. and call the Login()
+#    function from the main script as the first line of code. (This should be simplified later, but works for now)
+#
+# 5. If making a test case that utilizes multiple working accounts, call the 'fill_accounts' fixture as an argument. 
+#    The username of the first account is 'good_username0' password is 'good_pass' firstname is 'firstname0' and lastname 
+#    is 'lastname0', the number increments each account.
+#
+# 6. If you need to be logged into one of the multiple accounts, call the 'fill_accounts' and 'mock-inputs' fixture as 
+#    an argument. Make sure your USER INPUT starts with 'good_username+(id of account)' and 'good_pass' as the inputs. 
+#    and call the Login() function from the main script as the first line of code.
+#
+#    Note: Login() requires the USER INPUT 'return_key' to log out.
+#
+# 7. Jobs work similarly to accounts; 'prefab_account' -> 'prefab_job' , 'fill_accounts' -> 'fill_jobs' .
+#    all jobs use the VALUES 'job_title', 'job_desc', 'job_employer', 'job_location', 'job_salary' .
+#
+#    Finally: Feel free to make any new USEFUL FIXTURES to help youself with test cases.
+
 
 
 ## VALUES FOR TESTING ##
@@ -534,7 +573,7 @@ def test_languages(mock_inputs, capsys, user_input_return):
     assert "Kindly login to your account to set your" in captured.out
 
 
-def test_languages_logged_in(prefab_account, mock_inputs, capsys, user_input_languages):
+def test_languages_logged_in(setup_and_teardown, prefab_account, mock_inputs, capsys, user_input_languages):
 
     # Run the login function
     login()
@@ -550,7 +589,7 @@ def test_languages_logged_in(prefab_account, mock_inputs, capsys, user_input_lan
     assert "Your current language preference is:  English " in captured.out
 
 
-def test_guest_controls_logged_in(prefab_account, mock_inputs, capsys, user_input_guest_controls):
+def test_guest_controls_logged_in(setup_and_teardown, prefab_account, mock_inputs, capsys, user_input_guest_controls):
 
     # Run the login function
     login()
@@ -608,7 +647,7 @@ def test_find_person_bad(prefab_account, mock_inputs, capsys, user_input_find_pe
     assert "This person is not a member of" in captured.out
 
 
-def test_send_friend_request(fill_accounts, mock_inputs, capsys, user_input_send_request, good_username):
+def test_send_friend_request(setup_and_teardown, fill_accounts, mock_inputs, capsys, user_input_send_request, good_username):
 
     login()
 
@@ -620,7 +659,7 @@ def test_send_friend_request(fill_accounts, mock_inputs, capsys, user_input_send
     assert "Sent friend request to  "+good_username+"1" in captured.out
 
 
-def test_accept_friend_request(fill_accounts, mock_inputs, capsys, user_input_accept_request, good_username):
+def test_accept_friend_request(setup_and_teardown, fill_accounts, mock_inputs, capsys, user_input_accept_request, good_username):
 
     login()
 
