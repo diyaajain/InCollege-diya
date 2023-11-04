@@ -5,14 +5,14 @@ from main import *
 ## HOW TO MAKE TEST CASES ##
 
 # 1. If your test case needs to access the database for any reason, call the 'setup_and_teardown' fixture
-#    as an argument.  
+#    as an argument, This should no longer be needed as the databases should be seperate..  
 #
 # 2. If you need a string to test, and the criteria for the string may change in the future;
 #    then make a new VALUE fixture in the section "VALUES FOR TESTING" if said string doesn't
 #    already exist.
 #
 # 3. If your test case requires the need for user input, call the 'mock_inputs' fixture and one of
-#    the USER INPUT fixtures from the section "USER INPUTS" as an argument. 
+#    the USER INPUT fixtures from the section "USER INPUTS" as an argument, Try to avoid doing this. 
 #
 # 4. If you need a new USER INPUT fixture, create one by calling the 'inputs' fixture as an argument, and any
 #    of the VALUES fixtures you need. Then call 'inputs.append(VALUES or string)' In the EXACT ORDER that a user 
@@ -22,19 +22,15 @@ from main import *
 #    The username of the account is 'good_username' password is 'good_pass' firstname is 'firstname' and lastname 
 #    is 'lastname'.
 #
-# 6. If you need to be logged into an account, call the 'prefab_account' and 'mock-inputs' fixture as an argument.
-#    Make sure your USER INPUT starts with 'good_username' and 'good_pass' as the inputs. and call the Login()
-#    function from the main script as the first line of code. (This should be simplified later, but works for now)
+# 6. If you need to be logged into an account, call the 'prefab_accounts' fixture as an argument. 
+#    Call the set_current_account(accounts[0]) function from the main script as the first line of code.
 #
 # 5. If making a test case that utilizes multiple working accounts, call the 'fill_accounts' fixture as an argument. 
 #    The username of the first account is 'good_username0' password is 'good_pass' firstname is 'firstname0' and lastname 
 #    is 'lastname0', the number increments each account.
 #
-# 6. If you need to be logged into one of the multiple accounts, call the 'fill_accounts' and 'mock-inputs' fixture as 
-#    an argument. Make sure your USER INPUT starts with 'good_username+(id of account)' and 'good_pass' as the inputs. 
-#    and call the Login() function from the main script as the first line of code.
-#
-#    Note: Login() requires the USER INPUT 'return_key' to log out.
+# 6. If you need to be logged into one of the multiple accounts, call the 'fill_accounts' fixture as 
+#    an argument. Call the set_current_account(accounts[ID OF ACCOUNT]) function from the main script as the first line of code.
 #
 # 7. Jobs work similarly to accounts; 'prefab_account' -> 'prefab_job' , 'fill_accounts' -> 'fill_jobs' .
 #    all jobs use the VALUES 'job_title', 'job_desc', 'job_employer', 'job_location', 'job_salary' .
@@ -120,129 +116,11 @@ def inputs():
     return []
 
 @pytest.fixture
-def user_input_account(inputs, good_username, good_pass, firstname, lastname):
-    inputs.append(good_username)
-    inputs.append(good_pass)
-    inputs.append(firstname)
-    inputs.append(lastname)
-
-@pytest.fixture
-def user_input_account_bad(inputs, good_username, exit_key):
-    inputs.append(good_username)
-    inputs.append(exit_key)
-
-@pytest.fixture
-def user_input_login_good(inputs, good_username, good_pass):
-    inputs.append(good_username)
-    inputs.append(good_pass)
-
-@pytest.fixture
-def user_input_login_bad(inputs, bad_username, good_pass, exit_key):
-    inputs.append(bad_username)
-    inputs.append(good_pass)
-    inputs.append(exit_key)
-
-@pytest.fixture
 def user_input_login_on_second_attempt(inputs, bad_username, good_pass, good_username):
     inputs.append(bad_username)
     inputs.append(good_pass)
     inputs.append(good_username)
     inputs.append(good_pass)
-
-@pytest.fixture
-def user_input_job(inputs, job_title, job_desc, job_employer, job_location, job_salary, good_username, good_pass):
-    inputs.append(good_username)
-    inputs.append(good_pass)
-    inputs.append(job_title)
-    inputs.append(job_desc)
-    inputs.append(job_employer)
-    inputs.append(job_location)
-    inputs.append(job_salary)
-
-@pytest.fixture
-def user_input_job_bad(inputs, job_title, job_desc, job_employer, job_location, job_salary, good_username, good_pass):
-    inputs.append(job_title)
-    inputs.append(job_desc)
-    inputs.append(job_employer)
-    inputs.append(job_location)
-    inputs.append(job_salary)
-
-@pytest.fixture
-def user_input_guest_controls(inputs, good_username, good_pass, return_key):
-    inputs.append(good_username)
-    inputs.append(good_pass)
-    inputs.append("1")
-    inputs.append("3")
-    inputs.append("2")
-    inputs.append(return_key)
-
-@pytest.fixture
-def user_input_languages(inputs, good_username, good_pass, return_key):
-    inputs.append(good_username)
-    inputs.append(good_pass)
-    inputs.append("2")
-    inputs.append("1")
-    inputs.append(return_key)
-
-@pytest.fixture
-def user_input_search_user(inputs, firstname, lastname, return_key):
-    inputs.append(firstname)
-    inputs.append(lastname)
-    inputs.append(return_key)
-
-@pytest.fixture
-def user_input_search_user_bad(inputs, good_username, bad_username, return_key):
-    inputs.append(good_username)
-    inputs.append(bad_username)
-    inputs.append(return_key)
-
-@pytest.fixture
-def user_input_find_person(inputs, good_username, good_pass, firstname, lastname, return_key):
-    inputs.append(good_username)
-    inputs.append(good_pass)
-    inputs.append(firstname)
-    inputs.append(lastname)
-    inputs.append(return_key)
-
-@pytest.fixture
-def user_input_find_person_bad(inputs, good_username, good_pass, bad_username, return_key):
-    inputs.append(good_username)
-    inputs.append(good_pass)
-    inputs.append(good_username)
-    inputs.append(bad_username)
-    inputs.append(return_key)
-
-@pytest.fixture
-def user_input_privacy(inputs, good_username, good_pass, return_key):
-    inputs.append(good_username)
-    inputs.append(good_pass)
-    inputs.append(return_key)
-
-@pytest.fixture
-def user_input_send_request(inputs, good_username, good_pass, firstname, lastname, return_key):
-    inputs.append(good_username+"0")
-    inputs.append(good_pass)
-    inputs.append("F")
-    inputs.append(firstname+"1")
-    inputs.append(lastname+"1")
-    inputs.append("S")
-    inputs.append(return_key)
-
-@pytest.fixture
-def user_input_accept_request(inputs, good_username, good_pass, firstname, lastname, return_key):
-    inputs.append(good_username+"1")
-    inputs.append(good_pass)
-    inputs.append("F")
-    inputs.append(firstname+"0")
-    inputs.append(lastname+"0")
-    inputs.append("S")
-    inputs.append(return_key)
-    inputs.append(good_username+"0")
-    inputs.append(good_pass)
-    inputs.append("A")
-    inputs.append(return_key)
-
-
 
 @pytest.fixture
 def user_input_return(inputs, return_key):
@@ -263,16 +141,13 @@ def setup_and_teardown():
         pass
 
     #loads the database
-    initialize_database()
+    db.load()
 
     load_accounts()
     load_jobs()
 
     #waits for test to end
     yield
-
-    ## Clean up after each test
-    save_accounts()
 
     # Deletes the testing database
     try:
@@ -293,7 +168,7 @@ def setup_and_teardown():
 @pytest.fixture
 def prefab_account(good_username, good_pass, firstname, lastname):
     accounts.append(Account())
-    accounts[-1].create(good_username, good_pass, firstname, lastname, '1', '1', '1', "English", "", "")
+    accounts[-1].create(good_username, good_pass, firstname, lastname)
 
     yield
     ## Clear accounts when done
@@ -305,7 +180,7 @@ def prefab_account(good_username, good_pass, firstname, lastname):
 def fill_accounts(good_username, good_pass, firstname, lastname):
     for i in range(MAX_ACC):
         accounts.append(Account())
-        accounts[-1].create(good_username+str(i), good_pass, firstname+str(i), lastname+str(i), '1', '1', '1', "English", "", "")
+        accounts[-1].create(good_username+str(i), good_pass, firstname+str(i), lastname+str(i))
 
     yield
     ## Clear accounts when done
@@ -316,9 +191,15 @@ def fill_accounts(good_username, good_pass, firstname, lastname):
 # This creates a prefab job
 @pytest.fixture
 def prefab_job(job_title, job_desc, job_employer, job_location, job_salary, firstname, lastname):
-    jobs.append(Job())
-    jobs[-1].create(job_title, job_desc, job_employer, job_location, job_salary)
-    jobs[-1].set_poster(firstname, lastname)
+
+    ## set account 0 as the current account
+    try:
+        set_current_account(accounts[0])
+        account = get_current_account()
+    except IndexError:
+        raise RuntimeError("Must call prefab_account or fill_accounts as an argument first before prefab_job!")
+    
+    create_job(0, job_title, job_desc, job_employer, job_location, job_salary)
 
     yield
     ## Clear jobs when done
@@ -327,10 +208,16 @@ def prefab_job(job_title, job_desc, job_employer, job_location, job_salary, firs
 # This creates the maximun number of prefab jobs
 @pytest.fixture
 def fill_jobs(job_title, job_desc, job_employer, job_location, job_salary, firstname, lastname):
+
+    ## set account 0 as the current account
+    try:
+        set_current_account(accounts[0])
+        account = get_current_account()
+    except IndexError:
+        raise RuntimeError("Must call prefab_account or fill_accounts as an argument first before fill_jobs!")
+
     for i in range(MAX_JOB):
-        jobs.append(Job())
-        jobs[-1].create(job_title, job_desc, job_employer, job_location, job_salary)
-        jobs[-1].set_poster(firstname, lastname)
+        create_job(i, job_title+str(i), job_desc, job_employer, job_location, job_salary)
 
     yield
     ## Clear jobs when done
@@ -346,7 +233,7 @@ def mock_inputs(monkeypatch, inputs):
     def mock_input(prompt=None):
         return input_values.pop(0)
     monkeypatch.setattr('builtins.input', mock_input)
-
+    
 
 ############## TESTS ##################################
 
@@ -358,10 +245,17 @@ def test_get_account(prefab_account, good_username, bad_username):
     assert get_account(bad_username) == -1
 
 
-def test_create_account(setup_and_teardown, mock_inputs, capsys, user_input_account):
+def test_create_account(capsys, good_username, good_pass, firstname, lastname):
+
+    check1 = check_username(good_username)
+
+    check2 = check_valid_password(good_pass)
+
+    assert check1 == False
+    assert check2 == False
     
     # Run the create account function
-    create_account()
+    create_account(good_username, good_pass, firstname, lastname)
 
     # Capture the printed output
     captured = capsys.readouterr()
@@ -369,21 +263,18 @@ def test_create_account(setup_and_teardown, mock_inputs, capsys, user_input_acco
     # Check if the login was successful
     assert "Account successfully created!" in captured.out
 
-def test_create_account_with_same_username(setup_and_teardown, prefab_account, mock_inputs, capsys, user_input_account_bad):
+def test_create_account_already_exist(prefab_account, good_username):
+    
+    # Run the username checker function
+    check = check_username(good_username)
+
+    # Check if the username already exists
+    assert check == True
+
+def test_create_account_when_max(capsys, fill_accounts, good_username, good_pass, firstname, lastname):
     
     # Run the create account function
-    create_account()
-
-    # Capture the printed output
-    captured = capsys.readouterr()
-
-    # Check if the login was successful
-    assert "Username invalid! Username already exists!" in captured.out
-
-def test_create_account_when_max(setup_and_teardown, fill_accounts, mock_inputs, capsys, user_input_account):
-    
-    # Run the create account function
-    create_account()
+    create_account(good_username, good_pass, firstname, lastname)
 
     # Capture the printed output
     captured = capsys.readouterr()
@@ -392,12 +283,12 @@ def test_create_account_when_max(setup_and_teardown, fill_accounts, mock_inputs,
     assert "All permitted accounts have been created, please come back later." in captured.out
 
 
-def test_create_job(setup_and_teardown, mock_inputs, capsys, prefab_account, user_input_job):
+def test_create_job(capsys, prefab_account, job_title, job_desc, job_employer, job_location, job_salary):
     # login to a account
-    login()
+    set_current_account(accounts[0])
 
     # Run the create account function
-    create_job()
+    create_job(0, job_title, job_desc, job_employer, job_location, job_salary)
 
     # Capture the printed output
     captured = capsys.readouterr()
@@ -405,29 +296,24 @@ def test_create_job(setup_and_teardown, mock_inputs, capsys, prefab_account, use
     # Check if the login was successful
     assert "Job successfully posted!" in captured.out
 
-def test_create_job_when_not_log_in(setup_and_teardown, mock_inputs, capsys, user_input_job_bad):
+    jobs.clear()
 
-    # Run the create account function
-    create_job()
 
-    # Capture the printed output
-    captured = capsys.readouterr()
+def test_create_job_when_max(capsys, prefab_account, fill_jobs, job_title, job_desc, job_employer, job_location, job_salary):
 
-    # Check if the login was successful
-    assert "You must be logged in to post a job!" in captured.out
-
-def test_create_job_when_max(setup_and_teardown, fill_jobs, prefab_account, mock_inputs, capsys, user_input_job):
     # login to a account
-    login()
+    set_current_account(accounts[0])
 
     # Run the create account function
-    create_job()
+    create_job(MAX_JOB, job_title, job_desc, job_employer, job_location, job_salary)
 
     # Capture the printed output
     captured = capsys.readouterr()
 
     # Check if the login was successful
     assert "All permitted job postings have been created, please come back later." in captured.out
+
+    jobs.clear()
 
 
 # Test with valid password
@@ -453,10 +339,10 @@ def test_no_symbol(no_sym_pass):
 
 
 # Test the login function
-def test_login_success(prefab_account, mock_inputs, capsys, user_input_login_good):
+def test_login_success(capsys, prefab_account, good_username, good_pass):
 
     # Run the login function
-    login()
+    login(good_username, good_pass)
 
     # Capture the printed output
     captured = capsys.readouterr()
@@ -464,10 +350,10 @@ def test_login_success(prefab_account, mock_inputs, capsys, user_input_login_goo
     # Check if the login was successful
     assert "You have successfully logged in." in captured.out
 
-def test_login_failure(prefab_account, mock_inputs, capsys, user_input_login_bad):
+def test_login_failure(capsys, prefab_account, bad_username, good_pass):
 
     # Run the login function
-    login()
+    login(bad_username, good_pass)
 
     # Capture the printed output
     captured = capsys.readouterr()
@@ -478,7 +364,7 @@ def test_login_failure(prefab_account, mock_inputs, capsys, user_input_login_bad
 def test_login_on_next_attempt(prefab_account, mock_inputs, capsys, user_input_login_on_second_attempt):
 
     # Run the login function
-    login()
+    login_base()
 
     # Capture the printed output
     captured = capsys.readouterr()
@@ -524,9 +410,9 @@ def test_privacy_policy(capsys, mock_inputs, user_input_return):
     assert "You entrust us with your information" in captured.out
     assert "this is a huge responsibility." in captured.out
 
-def test_privacy_policy_logged_in(prefab_account, capsys, mock_inputs, user_input_privacy):
+def test_privacy_policy_logged_in(capsys, prefab_account, mock_inputs, user_input_return):
 
-    login()
+    set_current_account(accounts[0])
 
     privacy_policy()
 
@@ -553,7 +439,7 @@ def test_brand_policy():
     assert "Brand Policy" in result
     assert "Our Brand Policy outlines the guidelines" in result
 
-def test_guest_controls(mock_inputs, capsys, user_input_return):
+def test_guest_controls(capsys, mock_inputs, user_input_return):
     guest_controls()
 
     # Capture the printed output
@@ -562,7 +448,7 @@ def test_guest_controls(mock_inputs, capsys, user_input_return):
     assert "Guest Controls: Information" in captured.out
     assert "Kindly login to use" in captured.out
 
-def test_languages(mock_inputs, capsys, user_input_return):
+def test_languages(capsys, mock_inputs, user_input_return):
 
     languages()
 
@@ -573,73 +459,78 @@ def test_languages(mock_inputs, capsys, user_input_return):
     assert "Kindly login to your account to set your" in captured.out
 
 
-def test_languages_logged_in(setup_and_teardown, prefab_account, mock_inputs, capsys, user_input_languages):
+def test_languages_logged_in(prefab_account):
+    
+    # Set the current account and retrieve it
+    set_current_account(accounts[0])
+    account = get_current_account()
+
+    #Set Language to spanish first
+    account.set_language("Spanish")
+
+    assert account.get_language() == "Spanish"
+
+    #Next Language to english next
+    account.set_language("English")
+
+    assert account.get_language() == "English"
+
+
+def test_guest_controls_logged_in(prefab_account):
 
     # Run the login function
-    login()
+    set_current_account(accounts[0])
+    account = get_current_account()
 
     #Run the guest controls menu
-    languages()
+    update_ad_setting("1")
+    update_ad_setting("2")
+    update_ad_setting("3")
 
-    # Capture the printed output
-    captured = capsys.readouterr()
+    assert account.get_emailAd() == 0
+    assert account.get_smsAd() == 0
+    assert account.get_targetAd() == 0
 
-    # Check if the login was successful
-    assert "Your current language preference is:  Spanish" in captured.out
-    assert "Your current language preference is:  English " in captured.out
+def test_search_user(capsys, prefab_account, firstname, lastname):
 
-
-def test_guest_controls_logged_in(setup_and_teardown, prefab_account, mock_inputs, capsys, user_input_guest_controls):
-
-    # Run the login function
-    login()
-
-    #Run the guest controls menu
-    guest_controls()
-
-    # Capture the printed output
-    captured = capsys.readouterr()
-
-    # Check if the login was successful
-    assert "Email ads:  Yes  SMS ads:  Yes  Target ads:  Yes" in captured.out
-    assert "Email ads:  No  SMS ads:  Yes  Target ads:  Yes" in captured.out
-    assert "Email ads:  No  SMS ads:  Yes  Target ads:  No" in captured.out
-    assert "Email ads:  No  SMS ads:  No  Target ads:  No" in captured.out
-
-def test_search_user(prefab_account, mock_inputs, capsys, user_input_search_user):
-
-    search_user()
+    ## Search for a user using a existing firstname and lastname
+    search_user(firstname, lastname)
 
     # Capture the printed output
     captured = capsys.readouterr()
 
     assert "They are a part of the" in captured.out
 
-def test_search_user_bad(prefab_account, mock_inputs, capsys, user_input_search_user_bad):
+def test_search_user_bad(capsys, prefab_account, bad_username, lastname):
 
-    search_user()
+    ## Search for a user using a nonexisting firstname or lastname
+    search_user(bad_username, lastname)
 
     # Capture the printed output
     captured = capsys.readouterr()
 
     assert "They are not yet a part" in captured.out
 
-def test_find_person(prefab_account, mock_inputs, capsys, user_input_find_person, firstname, lastname, good_username):
+def test_find_person(capsys, prefab_account, firstname, lastname, good_username):
 
-    login()
+    # Set the current account
+    set_current_account(accounts[0])
 
-    find_person()
+    ## Search for a user using a existing firstname and lastname
+    find_person(firstname, lastname)
 
     # Capture the printed output
     captured = capsys.readouterr()
 
     assert "The username of "+firstname+" "+lastname+" is: "+good_username in captured.out
 
-def test_find_person_bad(prefab_account, mock_inputs, capsys, user_input_find_person_bad):
+def test_find_person_bad(capsys, prefab_account, bad_username, lastname):
 
-    login()
+    # Set the current account
+    set_current_account(accounts[0])
 
-    find_person()
+    ## Search for a user using a nonexisting firstname or lastname
+    find_person(bad_username, lastname)
 
     # Capture the printed output
     captured = capsys.readouterr()
@@ -647,11 +538,11 @@ def test_find_person_bad(prefab_account, mock_inputs, capsys, user_input_find_pe
     assert "This person is not a member of" in captured.out
 
 
-def test_send_friend_request(setup_and_teardown, fill_accounts, mock_inputs, capsys, user_input_send_request, good_username):
+def test_send_friend_request(capsys, fill_accounts, good_username):
 
-    login()
+    set_current_account(accounts[0])
 
-    user_menu()
+    send_request(good_username+"1")
 
     # Capture the printed output
     captured = capsys.readouterr()
@@ -659,15 +550,201 @@ def test_send_friend_request(setup_and_teardown, fill_accounts, mock_inputs, cap
     assert "Sent friend request to  "+good_username+"1" in captured.out
 
 
-def test_accept_friend_request(setup_and_teardown, fill_accounts, mock_inputs, capsys, user_input_accept_request, good_username):
+def test_accept_friend_request(capsys, fill_accounts, good_username):
 
-    login()
+    ## set account 1 as the current account
+    set_current_account(accounts[1])
 
-    user_menu()
+    ## send friend request to account 0
+    send_request(good_username+"0")
 
-    login()
+    ## set account 0 as current account
+    set_current_account(accounts[0])
+
+    ## Accept friend request from account 1
+    accept_request(True, good_username+"1")
 
     # Capture the printed output
     captured = capsys.readouterr()
 
-    assert "You have a new friend request:  "+good_username+"1" in captured.out
+    assert "Accepted "+good_username+"1"+"'s request!" in captured.out
+
+def test_reject_friend_request(capsys, fill_accounts, good_username):
+
+    ## set account 1 as the current account
+    set_current_account(accounts[1])
+
+    ## send friend request to account 0
+    send_request(good_username+"0")
+
+    ## set account 0 as current account
+    set_current_account(accounts[0])
+
+    ## Reject friend request from account 1
+    accept_request(False, good_username+"1")
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+
+    assert "Rejected "+good_username+"1"+"'s request!" in captured.out
+
+# Test job listing
+def test_job_listing(capsys, prefab_account, fill_jobs, job_title):
+
+    ## set account 0 as current account
+    set_current_account(accounts[0])
+
+    ## get all posts then disply them
+    posts = get_all_postings()
+    display_job_list(posts)
+
+    captured = capsys.readouterr()
+    assert job_title+"0" in captured.out
+
+# Test job details display
+def test_job_details_display(capsys, prefab_account, fill_jobs, job_title):
+
+    posts = get_all_postings()
+
+    display_post(posts[0])
+    captured = capsys.readouterr()
+    assert "Title: " + job_title+"0" in captured.out
+
+# Test job application
+def test_job_application(capsys, fill_accounts, fill_jobs):
+
+    ## set account 1 as current account
+    set_current_account(accounts[1])
+    account = get_current_account()
+
+    posts = get_all_postings()
+
+    account.apply_for_job(posts[0], "12/01/2023", "01/01/2024", "I am a good fit for this job because...")
+    captured = capsys.readouterr()
+
+    assert "Application submitted successfully!" in captured.out
+
+# Test job deletion by poster
+def test_job_deletion_by_poster(capsys, prefab_account, fill_jobs):
+
+    ## set account 0 as current account
+    set_current_account(accounts[0])
+
+    posts = get_all_postings()
+
+    delete_job(posts[0])
+    captured = capsys.readouterr()
+    assert "Job deleted successfully!" in captured.out
+
+# Test job deletion impact on applications
+def test_job_deletion_impact_on_applications(capsys, fill_accounts, fill_jobs):
+    
+    ## set account 1 as current account
+    set_current_account(accounts[1])
+    account = get_current_account()
+
+    posts = get_all_postings()
+
+    account.apply_for_job(posts[0], "12/01/2023", "01/01/2024", "I am a good fit for this job because...")
+
+    ## Get name of job to be deleted
+    job_name = posts[0].title
+
+    ## set account 0 as current account (Owner of jobs) and delete job
+    set_current_account(accounts[0])
+    delete_job(posts[0])
+
+    ## set account 1 as current account and notify if job deleted
+    set_current_account(accounts[1])
+    
+    notify_if_deleted()
+
+    captured = capsys.readouterr()
+
+    assert "The job you applied for has been deleted! -> "+job_name in captured.out
+
+# Test job saving and unsaving
+def test_job_saving_and_unsaving(fill_accounts, prefab_job):
+
+    ## set account 1 as current account 
+    set_current_account(accounts[1])
+    account = get_current_account()
+
+    posts = get_all_postings()
+    account.save_post(posts[0])
+
+    saved = account.get_saved().split(",")
+
+    assert str(posts[0].id) in saved[0]
+
+    account.unsave_post(posts[0].id)
+
+    saved = account.get_saved().split(",")
+
+    assert str(posts[0].id) not in saved
+
+
+# Test applying for own job posting
+def test_applying_for_own_job(capsys, prefab_account, fill_jobs):
+    
+    account = get_current_account()
+
+    posts = get_all_postings()
+    account.apply_for_job(posts[0], "12/01/2023", "01/01/2024", "I am a good fit for this job! ")
+
+    captured = capsys.readouterr()
+    assert "You cannot apply for your own job posting!" in captured.out
+
+# Test viewing list of applied jobs
+def test_viewing_applied_jobs(capsys, fill_accounts, fill_jobs, job_title):
+    
+    ## set account 1 as current account 
+    set_current_account(accounts[1])
+    account = get_current_account()
+
+    posts = get_all_postings()
+
+    account.apply_for_job(posts[1], "12/01/2023", "01/01/2024", "I am a good fit for this job! ")
+
+    posts = get_applied_postings(False)
+    
+    display_job_list(posts)
+
+    captured = capsys.readouterr()
+    assert job_title+"1" in captured.out
+
+# Test viewing list of jobs not applied for
+def test_viewing_jobs_not_applied_for(capsys, fill_accounts, fill_jobs, job_title):
+    
+    ## set account 1 as current account 
+    set_current_account(accounts[1])
+    account = get_current_account()
+
+    posts = get_all_postings()
+
+    account.apply_for_job(posts[0], "12/01/2023", "01/01/2024", "I am a good fit for this job! ")
+
+    posts = get_applied_postings(True)
+    
+    display_job_list(posts)
+
+    captured = capsys.readouterr()
+    assert job_title+"1" in captured.out
+
+# Test retrieving list of saved jobs
+def test_retrieving_saved_jobs(capsys, fill_accounts, fill_jobs, job_title):
+
+    ## set account 1 as current account 
+    set_current_account(accounts[1])
+    account = get_current_account()
+
+    posts = get_all_postings()
+    account.save_post(posts[0])
+
+    posts = get_saved_postings()
+
+    display_job_list(posts)
+
+    captured = capsys.readouterr()
+    assert job_title+"0" in captured.out
+

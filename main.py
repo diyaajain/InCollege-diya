@@ -15,8 +15,11 @@
 ########################################################################
 ########################################################################
 from math import ceil, floor
-import sqlite3
+import string
 
+import database
+
+_testing_ = True
 
 accounts = []  ## Lists of all accounts
 jobs = []      ## Lists of all job postings
@@ -25,7 +28,12 @@ friend_requests = []   ## List of all friend requests
 current_account = None ## The currently active account
 
 MAX_ACC = 10  ## Maximum number of accounts supported
-MAX_JOB = 5  ## Maximun number of Jobs that can be posted.
+MAX_JOB = 10  ## Maximun number of Jobs that can be posted.
+
+job_id = 0
+
+db = database.Database(database.default_db)
+
 
 
 class Account:
@@ -74,15 +82,30 @@ class Account:
         self.__password = None
         self.__firstname = None
         self.__lastname = None
-        self.__email_ad='1'
-        self.__sms_ad='1'
-        self.__target_ad='1'
-        self.__language='English'
+        self.__email_ad = 1
+        self.__sms_ad = 1
+        self.__target_ad = 1
+        self.__language = 'English'
         self.friends = ""
         self.friend_requests = ""
+        self.active_requests = ""
+
+        self.has_profile = 0
+
+        self.__title = ""
+        self.__major = ""
+        self.__uni = ""
+        self.__info = ""
+        self.__exp = ""
+        self.__edu = ""
+
+        self.postings = ""
+        self.applied = ""
+        self.saved = ""
+
 
     
-    def create(self, usrn, pswd, first, last, email, sms, target,language, friend_requests,friends):
+    def create(self, usrn, pswd, first, last):
         """
         Populates the account with the supplied account details.
 
@@ -105,13 +128,20 @@ class Account:
         self.__password = pswd
         self.__firstname = first
         self.__lastname = last
-        self.__email_ad = email
-        self.__sms_ad = sms
-        self.__target_ad = target
-        self.__language= language
-        self.friend_requests=friend_requests
-        self.friends=friends
 
+    def save_initial_data(self):
+        """ Saves the default information of the account"""
+        if not _testing_:
+            db.update("accounts", self.__username, ["password", "firstname", "lastname", "emailAd", "smsAd", "targetAd", "language"], 
+                  [self.__password, self.__firstname, self.__lastname, self.__email_ad, self.__sms_ad, self.__target_ad, self.__language])
+    
+    def save_profile(self):
+        """ Saves the profile information of the account"""
+
+        if not _testing_:
+            db.update("accounts", self.__username, ["has_profile", "title", "major", "university", "info", "experience", "education"], 
+                  [self.has_profile, self.__title, self.__major, self.__uni, self.__info, self.__exp, self.__edu])
+        
     def get_username(self):
         """
         Returns the username of the account.
@@ -160,6 +190,160 @@ class Account:
 
         return self.__lastname
 
+    def get_title(self):
+        """
+        Returns the title of the user.
+
+        Returns
+        -------
+        __title : str
+            The title of the user.
+        """
+
+        return self.__title
+
+    def get_major(self):
+        """
+        Returns the major of the user.
+
+        Returns
+        -------
+        __major : str
+            The major of the user.
+        """
+
+        return self.__major
+
+    def get_uni(self):
+        """
+        Returns the university of the user.
+
+        Returns
+        -------
+        __uni : str
+            The university of the user.
+        """
+
+        return self.__uni
+
+    def get_info(self):
+        """
+        Returns the infomation about the user.
+
+        Returns
+        -------
+        __info : str
+            The infomation about the user.
+        """
+
+        return self.__info
+
+    def get_exp(self):
+        """
+        Returns the experience of the user.
+
+        Returns
+        -------
+        __exp : str
+            The experience of the user.
+        """
+
+        return self.__exp
+
+    def get_edu(self):
+        """
+        Returns the education of the user.
+
+        Returns
+        -------
+        __edu : str
+            The education of the user.
+        """
+
+        return self.__edu
+
+    def get_saved(self):
+        return self.saved
+    
+    def get_applied(self):
+        return self.applied
+    
+    def get_posted(self):
+        return self.postings
+
+
+    def set_title(self, title):
+        """
+        Sets the title of the user.
+
+        Parameters
+        -------
+        title : str
+            The title of the user.
+        """
+
+        self.__title = title
+
+    def set_major(self, major):
+        """
+        Sets the major of the user.
+
+        Parameters
+        -------
+        major : str
+            The major of the user.
+        """
+
+        self.__major = major
+
+    def set_uni(self, uni):
+        """
+        Sets the university of the user.
+
+        Parameters
+        -------
+        uni : str
+            The university of the user.
+        """
+
+        self.__uni = uni
+
+    def set_info(self, info):
+        """
+        Sets the infomation about the user.
+
+        Parameters
+        -------
+        info : str
+            The infomation about the user.
+        """
+
+        self.__info = info
+
+    def set_exp(self, exp):
+        """
+        Sets the experience of the user.
+
+        Parameters
+        -------
+        exp : str
+            The experience of the user.
+        """
+
+        self.__exp = exp
+
+    def set_edu(self, edu):
+        """
+        Sets the education of the user.
+
+        Parameters
+        -------
+        edu : str
+            The education of the user.
+        """
+
+        self.__edu = edu
+
 
 
     def get_emailAd(self):
@@ -174,69 +358,76 @@ class Account:
         return self.friend_requests
     def get_friends(self):
         return self.friends
+    
+    def set_emailAd(self, emailAd):
+        self.__email_ad = emailAd
+    def set_smsAd(self, smsAd):
+        self.__sms_ad = smsAd
+    def set_targetAd(self, targetAd):
+        self.__target_ad = targetAd
+    def set_friend_requests(self, freq):
+        self.friend_requests = freq
+    def set_friends(self, friends):
+        self.friends = friends
+
+
+
+
     def preferences(self):
         print("\nYour advertising preferences are:\n")
-        emailVal="Yes" if self.__email_ad=='1' else "No"
-        smsVal="Yes" if self.__sms_ad=='1' else "No"
-        targetVal="Yes" if self.__target_ad=='1' else "No"
+        emailVal="Yes" if self.__email_ad==1 else "No"
+        smsVal="Yes" if self.__sms_ad==1 else "No"
+        targetVal="Yes" if self.__target_ad==1 else "No"
         print("\nEmail ads: ",emailVal," SMS ads: ",smsVal," Target ads: ",targetVal)
+
+
     def update_ad(self,email=True,sms=True,target=True):
-        conn = sqlite3.connect('accounts.db')
-        cursor = conn.cursor()
+
         if email==False:
-            self.__email_ad=False
+            self.__email_ad=0
         elif sms==False:
-            self.__sms_ad=False
+            self.__sms_ad=0
         elif target==False:
-            self.__target_ad=False
-        # SQL statement to update emailAd, smsAd, and targetAD columns based on username
-        update_query = "UPDATE accounts SET emailAd = ?, smsAd = ?, targetAD = ? WHERE username = ?"
+            self.__target_ad=0
 
-        # Execute the update query with the new values and username
-        cursor.execute(update_query, (self.__email_ad, self.__sms_ad, self.__target_ad, self.__username))
+        # update emailAd, smsAd, and targetAD columns based on username
+        if not _testing_:
+            db.update("accounts", self.__username, ["emailAd", "smsAd", "targetAd"], [self.__email_ad, self.__sms_ad, self.__target_ad])
 
-        # Commit the changes
-        conn.commit()
-
-        # Close the connection
-        conn.close()
+        
     def show_language(self):
         print("\nYour current language preference is: ",self.__language,"\n")
-    def update_language(self,english=True,spanish=False):
-        conn = sqlite3.connect('accounts.db')
-        cursor = conn.cursor()
-        if spanish==True:
-            self.__language='Spanish'
-        elif english==True:
-            self.__language='English'
-        update_query="UPDATE accounts SET language = ? WHERE username = ?"
-        cursor.execute(update_query,(self.__language,self.__username))
-        conn.commit()
-        conn.close()
+
+    def set_language(self,lang):
+
+        if lang in ["English", "Spanish"]:
+            self.__language = lang
+
+        else:
+            print("Not a valid Language!")
+
+        if not _testing_:
+            db.update("accounts", self.__username, "language", self.__language)
 
     def send_friend_request(self, other_user):
         accounts[get_account(other_user)].receive_friend_request(self.__username)
 
+
     def receive_friend_request(self, friend_request):
         if not self.friend_requests:
-            self.friend_requests=''
-        self.friend_requests=self.friend_requests+','+friend_request
-        connection = sqlite3.connect("accounts.db")
-        cursor = connection.cursor()
-        #print(receiver_id)
+            self.friend_requests=friend_request
+        else:
+            self.friend_requests=self.friend_requests+','+friend_request
 
         # Update the friend_requests column with the updated data
-        cursor.execute("UPDATE accounts SET friend_requests=? WHERE username=?", (self.friend_requests, self.__username))
-        connection.commit()  # Commit the changes to the database
-
-        connection.close()
+        if not _testing_:
+            db.update("accounts", self.__username, "friend_requests", self.friend_requests)
 
     def accept_friend_request(self, friend_request):
         new_friend = accounts[get_account(friend_request)]
         new_friend_username = new_friend.get_username()
 
         # Append new friend to the current user's friends string
-        print("here: ",self.friends)
         if not self.friends:
             self.friends = new_friend_username
         else:
@@ -253,37 +444,43 @@ class Account:
         reqs.pop(0)
         self.friend_requests = ','.join(reqs)
 
-        # Update friends and friend requests in the database
-        connection = sqlite3.connect("accounts.db")
-        cursor = connection.cursor()
+        if not _testing_:
+            new_friend = accounts[get_account(friend_request)]
+            new_friend_username = new_friend.get_username()
 
-        # Update the friend_requests column with the updated data
-        cursor.execute("UPDATE accounts SET friend_requests=? WHERE username=?", (self.friend_requests, self.__username))
+            # Update the friend_requests and friends column with the updated data
+            db.update("accounts", self.__username, ["friend_requests", "friends"] , [self.friend_requests, self.friends])
 
-        # Update friends for current user
-        cursor.execute("UPDATE accounts SET friends=? WHERE username=?", (self.friends, self.__username))
+            # Update friends for new friend
+            db.update("accounts", new_friend.get_username(), ["friends", "active_requests"], [new_friend.friends, new_friend.active_requests])
 
-        # Update friends for new friend
-        cursor.execute("UPDATE accounts SET friends=? WHERE username=?", (new_friend.friends, new_friend.__username))
-
-        connection.commit()  # Commit the changes to the database
-        connection.close()
 
     def reject_friend_request(self, friend_request):
+
+        non_friend = accounts[get_account(friend_request)]
+        non_friend_username = non_friend.get_username()
+
+        act = non_friend.active_requests.split(",")
+        
+        if self.__username in act:
+            act.remove(self.__username)
+        non_friend.active_requests = ','.join(act)
+
         reqs=self.friend_requests.split(',')
         reqs.pop(0)
         self.friend_requests=','.join(reqs)
-        connection = sqlite3.connect("accounts.db")
-        cursor = connection.cursor()
-        #print(receiver_id)
 
-        # Update the friend_requests column with the updated data
-        cursor.execute("UPDATE accounts SET friend_requests=? WHERE username=?", (self.friend_requests, self.__username))
-        connection.commit()  # Commit the changes to the database
+        if not _testing_:
+            non_friend = accounts[get_account(friend_request)]
+            non_friend_username = non_friend.get_username()
+            
+            # Update the friend_requests column with the updated data
+            db.update("accounts", self.__username, "friend_requests", self.friend_requests)
 
-        connection.close()
-        #remove req from friend requests
-        #update database
+            # Update the friend_requests column with the updated data
+            db.update("accounts", non_friend_username, "active_requests", non_friend.active_requests)
+            
+    
 
     def remove_friend(self, friend):
         new_friends=(self.friends.split(','))
@@ -293,37 +490,94 @@ class Account:
         old_friend_friendList=old_friend.friends.split(',')
         old_friend_friendList.remove(self.__username)
         old_friend.friends=','.join(old_friend_friendList)
-        connection = sqlite3.connect("accounts.db")
-        cursor = connection.cursor()
-        # Update friends for current user
-        cursor.execute("UPDATE accounts SET friends=? WHERE username=?", (self.friends, self.__username))
 
-        # Update friends for new friend
-        cursor.execute("UPDATE accounts SET friends=? WHERE username=?", (old_friend.friends, old_friend.__username))
+        if not _testing_:
+            # Update friends for current user
+            db.update("accounts", self.__username, "friends", self.friends)
 
-        connection.commit()  # Commit the changes to the database
-        connection.close()
-
+            # Update friends for new friend
+            db.update("accounts", old_friend.get_username(), "friends", old_friend.friends)
 
 
     def show_friend_requests(self):
         if not self.friend_requests:
             return []
         pending_requests = self.friend_requests.split(',')
+        if '' in pending_requests:
+            pending_requests.remove("")
         return pending_requests
 
+    def save_active_requests(self):
+        if not _testing_:
+            db.update("accounts", self.__username, "active_requests", self.active_requests)
 
-    def load_friend_requests(self):
-        # We need to update this
-        # Load pending friend requests for a user from the database
-        connection = sqlite3.connect("accounts.db")
-        cursor = connection.cursor()
+    def add_posting(self, id):
+        if self.postings == "":
+            self.postings = str(id)
+        else:
+            self.postings = self.postings + "," + str(id)
 
-        cursor.execute("SELECT * FROM friend_requests WHERE receiver_id = ? AND status = 'pending'", (user_id,))
-        pending_requests = cursor.fetchall()
+        if not _testing_:
+            db.update("accounts", self.__username, "postings", self.postings)
 
-        connection.close()
-        return pending_requests
+    def save_post(self, post):
+        if self.saved == "":
+            self.saved = str(post.id)
+        else:
+            self.saved = self.saved + "," + str(post.id)
+
+        if not _testing_:
+            db.update("accounts", self.__username, "saved", self.saved)
+
+    def unsave_post(self, id):
+
+        saved = []
+        if self.saved:
+            saved = self.saved.split(",")
+        
+        if str(id) in saved:
+            saved.remove(str(id))
+            self.saved = ",".join(saved)
+
+        if not _testing_:
+            db.update("accounts", self.__username, "saved", self.saved)
+
+    def apply_for_job(self, job, grad_date, start_date, info):
+
+        if str(job.id) in self.postings.split(","):
+            print("You cannot apply for your own job posting!")
+        
+        if self.applied == "":
+            self.applied = job.title
+        else:
+            self.applied = self.applied + "," + job.title
+
+        self.unsave_post(job.id)
+
+        job.add_application(current_account.get_username(), grad_date, start_date, info)
+
+        print("\nApplication submitted successfully!\n")
+
+        if not _testing_:
+            db.update("accounts", self.__username, "applied", self.applied)
+
+    def unapply_for_job(self, title):
+        """ Removes the job from the user's list of applied jobs """
+        applied = []
+        if self.applied:
+            applied = self.applied.split(",")
+        
+        if str(title) in applied:
+            applied.remove(str(title))
+            self.applied = ",".join(applied)
+
+        if not _testing_:
+            db.update("accounts", self.__username, "applied", self.applied)
+
+
+
+
+
 
 class Job:
     """ 
@@ -369,6 +623,7 @@ class Job:
     def __init__(self):
         """Constructs the account class."""
 
+        self.id = -1
         self.title = None
         self.description = None
         self.employer = None
@@ -377,6 +632,8 @@ class Job:
 
         self.__firstname = None
         self.__lastname = None
+
+        self.applications = ""
     
     def create(self, title, desc, employ, locat, salary):
         """
@@ -405,6 +662,13 @@ class Job:
         self.employer = employ
         self.location = locat
         self.salary = salary
+
+    def save(self):
+        if not _testing_:
+            db.update("jobs", self.id, ["title", "desc", "employer", "location", "salary", "firstname", "lastname"], 
+                  [self.title, self.description, self.employer, self.location, self.salary, self.__firstname, self.__lastname])
+
+
 
 
     def get_firstname(self):
@@ -446,6 +710,18 @@ class Job:
 
         self.__firstname = fname
         self.__lastname = lname
+
+    def add_application(self,username, grad_date, start_date, info):
+
+        if self.applications == "":
+            self.applications = username+"::"+grad_date+"::"+start_date+"::"+info
+        else:
+            self.applications = self.applications + "," + username+"::"+grad_date+"::"+start_date+"::"+info
+
+        if not _testing_:
+            db.update("jobs", self.id, "applications", self.applications)
+
+
 
 def check_name(firstname, lastname):
     """
@@ -572,7 +848,7 @@ def check_valid_password(pswd):
         print("Password is missing a symbol!")
     return True
 
-def create_account():
+def create_account_base():
     """ 
     Menu loop for creating as new account,
     prompts the user to input a username and password.
@@ -637,14 +913,31 @@ def create_account():
     print("")
     last_name = input(":: " )
 
-    accounts.append(Account())
-    accounts[-1].create(username, password, first_name, last_name, email='1', sms='1', target='1', language='English',friend_requests="",friends="")
-    save_accounts()
+    create_account(username, password, first_name, last_name)
+    if not _testing_:
+        db.create("accounts", username)
+    accounts[-1].save_initial_data()
 
+def incr_jobs():
+    global job_id
+    job_id += 1
+
+def set_num_jobs(num):
+    global job_id
+    job_id = num
+
+def create_account(username, password, first_name, last_name):
+
+    if len(accounts) >= MAX_ACC:
+        print("All permitted accounts have been created, please come back later.")
+        return
+
+    accounts.append(Account())
+    accounts[-1].create(username, password, first_name, last_name)
     print("")
     print("Account successfully created!")
 
-def create_job():
+def create_job_base():
     """ 
     Menu loop for creating a new job posting,
     prompts the user to input a title, description, employer,
@@ -704,21 +997,291 @@ def create_job():
     job_salary = input(":: ")
 
     if current_account:
-        jobs.append(Job())
-        jobs[-1].create(job_title, job_desc, job_employer, job_location, job_salary)
-        first_name = current_account.get_firstname()
-        last_name = current_account.get_lastname()
-        jobs[-1].set_poster(first_name, last_name)
-
-        print("")
-        print("Job successfully posted!")
+        create_job(job_id, job_title, job_desc, job_employer, job_location, job_salary)
+        incr_jobs()
     else:
         print("")
         print("You must be logged in to post a job!")
 
-    save_jobs()
+    
+def create_job(id, title, desc, employ, loct, salary):
 
-def display_jobs():
+    if len(jobs) >= MAX_JOB:
+        print("All permitted job postings have been created, please come back later.")
+        return
+
+    jobs.append(Job())
+    jobs[-1].create(title, desc, employ, loct, salary)
+    jobs[-1].id = id
+    first_name = current_account.get_firstname()
+    last_name = current_account.get_lastname()
+    jobs[-1].set_poster(first_name, last_name)
+
+    current_account.add_posting(id)
+
+    print("")
+    print("Job successfully posted!")
+
+    if not _testing_:
+        db.create("jobs", id)
+
+    jobs[-1].save()
+
+
+    
+
+def create_profile():
+    """
+    Allows a user to create their user profile.
+
+    Returns
+    -------
+    None
+        returns back to user menu after completion.
+    """
+    print("")
+    if not current_account.get_title():
+        print("######################################")
+        print("##     Please enter your title      ##")
+        print("##  type 'Skip' to go to next part  ##")
+        print("##     or type 'Exit' to leave.     ##")
+        print("######################################") 
+    else:
+        print("######################################")
+        print("##      Would you like to edit      ##")
+        print("##           your title?            ##")
+        print("##  type 'Skip' to go to next part  ##")
+        print("##     or type 'Exit' to leave.     ##")
+        print("######################################") 
+    
+    print("")
+    user_title = input(":: ")
+
+    if user_title.upper() == "EXIT":
+        return
+
+    elif not user_title.upper() == "SKIP":
+        current_account.set_title(user_title)
+
+    current_account.has_profile = 1
+
+    print("")
+    if not current_account.get_major():
+        print("######################################")
+        print("##     Please enter your major      ##")
+        print("##  type 'Skip' to go to next part  ##")
+        print("##     or type 'Exit' to leave.     ##")
+        print("######################################")
+    else:
+        print("######################################")
+        print("##      Would you like to edit      ##")
+        print("##           your major?            ##")
+        print("##  type 'Skip' to go to next part  ##")
+        print("##     or type 'Exit' to leave.     ##")
+        print("######################################")
+
+    print("")
+    user_major = input(":: ")
+
+    if user_major.upper() == "EXIT":
+        return
+
+    elif not user_major.upper() == "SKIP":
+        current_account.set_major(string.capwords(user_major))
+
+    print("")
+    if not current_account.get_uni():
+        print("######################################")
+        print("##   Please enter your university   ##")
+        print("##  type 'Skip' to go to next part  ##")
+        print("##     or type 'Exit' to leave.     ##")
+        print("######################################")
+    else:
+        print("######################################")
+        print("##      Would you like to change    ##")
+        print("##         your university?         ##")
+        print("##  type 'Skip' to go to next part  ##")
+        print("##     or type 'Exit' to leave.     ##")
+        print("######################################")
+
+    print("")
+    user_uni = input(":: ")
+
+    if user_uni.upper() == "EXIT":
+        return
+
+    elif not user_uni.upper() == "SKIP":
+        current_account.set_uni(string.capwords(user_uni))
+
+    print("")
+    if not current_account.get_info():
+        print("######################################")
+        print("##  Write some info about yourself  ##")
+        print("##  type 'Skip' to go to next part  ##")
+        print("##     or type 'Exit' to leave.     ##")
+        print("######################################")
+    else:
+        print("######################################")
+        print("##      Would you like to change    ##")
+        print("##            your info?            ##")
+        print("##  type 'Skip' to go to next part  ##")
+        print("##     or type 'Exit' to leave.     ##")
+        print("######################################")
+
+    print("")
+    user_info = input(":: ")
+
+    if user_info.upper() == "EXIT":
+        return
+
+    elif not user_info.upper() == "SKIP":
+        current_account.set_info(user_info)
+
+    print("")
+    print("######################################")
+    print("##    Would you like to add some    ##")
+    print("##        job experience?           ##")
+    print("## type 'Remove' to delete previous ##")
+    print("##              entry               ##")
+    print("##     or type 'Exit' to leave.     ##")
+    print("######################################") 
+
+    exp = current_account.get_exp()
+    topics = ["Add job? (Y/N) ", "Job Title: ", "Employer: ", "Date-started: ", "Date-ended: ", "Location: ", "Description: "]
+    is_add = True
+
+    while is_add:
+
+        for topic in topics:
+            print("")
+            user_exp = input(":: "+topic)
+
+            if topic == "Add job? (Y/N) " and user_exp.upper() == "N":
+                is_add = False
+                break
+
+            elif topic == "Add job? (Y/N) " and user_exp.upper() == "REMOVE" and not exp:
+                print("No previous line to remove!")
+
+            elif topic == "Add job? (Y/N) " and user_exp.upper() == "REMOVE":
+                remove_line(exp)
+
+            elif user_exp.upper() == "EXIT":
+                current_account.set_exp(exp)
+                return
+
+            elif topic == "Add job? (Y/N) " and user_exp.upper() == "Y":
+                continue
+
+            #elif topic == "Add job? (Y/N) ":
+            #    "Not a correct input!"
+
+            elif user_exp.upper() == "REMOVE":
+                print("You must finish editing a job before removing it!")
+
+            elif not topic == "Add job? (Y/N) " and user_exp.upper() != "SKIP":
+                exp = exp+topic+user_exp+" "
+
+        exp = exp+"\n "
+
+    current_account.set_exp(exp)
+
+    print("")
+    print("######################################")
+    print("##    Would you like to add your    ##")
+    print("##       amount of education?       ##")
+    print("## type 'Remove' to delete previous ##")
+    print("##              entry               ##")
+    print("##     or type 'Exit' to leave.     ##")
+    print("######################################") 
+
+    edu = current_account.get_edu()
+    topics = ["Add Edu? (Y/N) ", "School Name: ", "Degree: ", "Years-Attended: "]
+    is_add = True
+
+    while is_add:
+
+        for topic in topics:
+            print("")
+            user_edu = input(":: "+topic)
+
+            if topic == "Add Edu? (Y/N) " and user_edu.upper() == "N":
+                is_add = False
+                break
+
+            elif topic == "Add Edu? (Y/N) " and user_edu.upper() == "REMOVE" and not edu:
+                print("No previous line to remove!")
+
+            elif topic == "Add Edu? (Y/N) " and user_edu.upper() == "REMOVE":
+                remove_line(edu)
+
+            elif user_edu.upper() == "EXIT":
+                current_account.set_edu(edu)
+                return
+
+            elif topic == "Add Edu? (Y/N) " and user_edu.upper() == "Y":
+                continue
+
+            #elif topic == "Add Edu? (Y/N) ":
+            #    print("Not a correct input!")
+
+            elif user_edu.upper() == "REMOVE":
+                print("You must finish editing a job before removing it!")
+
+            elif not topic == "Add Edu? (Y/N) " and user_edu.upper() != "SKIP":
+                edu = edu+topic+user_edu+" "
+
+        edu = edu+"\n "
+    
+    current_account.set_edu(edu)
+
+    current_account.save_profile()
+
+
+def delete_job(job):
+
+    ## delete the job from the job list
+    jobs.remove(job)
+
+    ## remove posting from account
+    postings = current_account.postings.split(",")
+
+    if str(job.id) in postings:
+        postings.remove(str(job.id))
+    
+    current_account.postings = ",".join(postings)
+
+    print("\nJob deleted successfully!\n")
+    
+    if not _testing_:
+        ## update the database
+        db.update("accounts", current_account.get_username(), "postings", current_account.postings)
+
+
+def remove_line(text):
+    """
+    Removes a line of text from a given paragraph.
+
+    Parameters
+    -------
+    text : str
+        The paragraph to modify.
+
+    Returns
+    -------
+    result : str
+        The original paragraph with one less line of text.
+    """
+    lines = text.split("\n")
+    lines = lines[0:-2]
+    result = ""
+    for line in lines:
+        result += line
+        result += "\n"
+    return result
+
+
+def show_post(post):
     """
     Todo.
 
@@ -727,9 +1290,283 @@ def display_jobs():
     None
         returns back to jobs menu after completion.
     """
-    print("Under construction!")
 
-def find_person():
+    applied = []
+    if current_account.applied:
+        applied = current_account.applied.split(",")
+
+    saved = []
+    if current_account.saved:
+        saved = current_account.saved.split(",")
+
+
+    is_users_post = False
+    if post.get_firstname() == current_account.get_firstname() and post.get_lastname() == current_account.get_lastname():
+        is_users_post = True
+
+    display_post(post)
+    
+    if is_users_post:
+        while True:
+            main_input = input("\nWould you like to (D)elete this post, or (R)eturn?\n\n:: ")
+            main_input = main_input[0].upper()
+            if main_input == "D":
+                ## delete the job from the database
+                if not _testing_:
+                    db.delete("jobs", post.id)
+                delete_job(post)
+                return True
+            elif main_input == "R":
+                return
+            else:
+                print("\nThat is not a valid input!\n")
+    else:
+        while True:
+            if post.title in applied:
+                input("\nPress enter to return...\n ")
+                return
+
+            elif str(post.id) in saved:
+                main_input = input("\nWould you like to (A)pply for this job, (U)nsave this job, or (R)eturn?\n\n:: ")
+                main_input = main_input[0].upper()
+                if main_input == "A":
+                    add_application(post)
+                    return
+                elif main_input == "U":
+                    current_account.unsave_post(post.id)
+                    return
+                elif main_input == "R":
+                    return
+                else:
+                    print("\nThat is not a valid input!\n")
+            else:
+                main_input = input("\nWould you like to (A)pply for this job, (S)ave this job for later, or (R)eturn?\n\n:: ")
+                main_input = main_input[0].upper()
+                if main_input == "A":
+                    add_application(post)
+                    return
+                elif main_input == "S":
+                    current_account.save_post(post)
+                    return
+                elif main_input == "R":
+                    return
+                else:
+                    print("\nThat is not a valid input!\n")
+
+def add_application(post):
+    grad_date = input("\nWhat date are you graduating (mm/dd/yy)?\n\n:: ")
+    start_date = input("\nWhat date can you start(mm/dd/yy)?\n\n:: ")
+    info = input("\nWhy do you think you will be a good fit for this job?\n\n:: ")
+    current_account.apply_for_job(post, grad_date, start_date, info)
+
+def display_post(post):
+    print("")
+    print("##################################################")
+    print("##")
+    print("##  Title:", post.title)
+    print("##")
+    print("##  Description:", post.description)
+    print("##")
+    print("##  Employer:", post.employer)
+    print("##  Location:", post.location)
+    print("##  Salary:", post.salary)
+    print("##")     
+    print("##################################################")
+    print("")
+
+
+def display_jobs(posts, is_owned=False):
+    """
+    Displays all the jobs that the user requested.
+
+    Returns
+    -------
+    None
+        returns back to jobs menu after completion.
+    """
+    if posts:
+
+        while True:
+
+            print("")
+            if is_owned:
+                print("These are the jobs that you own: ")
+            else:
+                print("These are the jobs that are available: ")
+            print("")
+
+            display_job_list(posts)
+
+            print("")
+            user_input = input("Enter the number of the job you want to view or enter '0' to return.\n\n:: ")
+            print("")
+
+            try:
+                user_input=int(user_input)-1
+            except ValueError:
+                print("not a valid input!")
+                print("")
+                continue
+
+            if not (-1 <= user_input < len(posts)):
+                print("not a valid input!")
+                print("")
+                continue
+
+            if user_input == -1:
+                return
+        
+            else:
+                was_deleted = show_post(posts[user_input])
+                if was_deleted:
+                    return
+
+
+    else:
+        print("There are no jobs/internships available!")
+
+        print("")
+        user_input = input("Press enter to continue...")
+        print("")
+
+    
+def display_job_list(posts):
+    postings = []
+    saved = []
+    applied = []
+
+    if current_account.postings:
+        postings = current_account.postings.split(",")
+    if current_account.saved:
+        saved = current_account.saved.split(",")
+    if current_account.applied:
+        applied = current_account.applied.split(",")
+
+
+    i = 0
+    for post in posts:
+        if str(post.id) in postings:
+            label = " (OWNED)"
+        elif post.title in applied:
+            label = " (APPLIED)"
+        elif str(post.id) in saved:
+            label = " (SAVED)"
+        else:
+            label = ""
+        print(str(i+1)+". "+post.title+label)
+        i+=1
+
+def display_jobs_menu():
+    """
+    Todo.
+
+    Returns
+    -------
+    None
+        returns back to jobs menu after completion.
+    """
+    print("")
+    print("######################################")
+    print("## This is where you can view jobs. ##")
+    print("##    You can view (A)ll postings,  ##")
+    print("##         (S)aved postings,        ##")
+    print("##  (P)ostings already applied for, ##")
+    print("##   or postings (N)ot applied for. ##")
+    print("##      You can also (R)eturn.      ##")
+    print("######################################")
+    print("")
+
+    user_input = None
+
+    while user_input not in ["A", "S", "P", "N", "R"]:
+
+        if user_input:
+            print("Not a valid input!")
+
+        user_input = input(":: ")
+
+        if user_input:
+            user_input = user_input[0].upper()
+
+        print("")
+
+    
+
+    
+
+    if user_input == "R":
+        return
+
+    elif user_input == "A":
+        posting = get_all_postings()
+
+    elif user_input == "S":
+        posting = get_saved_postings()
+
+    elif user_input == "P":
+        posting = get_applied_postings()
+
+    elif user_input == "N":
+        posting = get_applied_postings(switch=True)
+        
+    display_jobs(posting)
+
+
+def get_all_postings():
+    return jobs
+
+def get_saved_postings():
+
+    saved = []
+
+    if current_account.saved:
+        saved = current_account.saved.split(",")
+        saved = [int(x) for x in saved]
+
+    postings = []
+
+    for job in jobs:
+        if job.id in saved:
+            postings.append(job)
+
+    return postings
+
+def get_applied_postings(switch = False):
+
+    applied = []
+
+    if current_account.applied:
+        applied = current_account.applied.split(",")
+
+    postings = []
+
+    for job in jobs:
+        if job.title in applied and not switch:
+            postings.append(job)
+        elif job.title not in applied and switch:
+            postings.append(job)
+
+    return postings
+
+def get_posted_postings():
+
+    posts = []
+
+    if current_account.postings:
+        posts = current_account.postings.split(",")
+        posts = [int(x) for x in posts]
+
+    postings = []
+
+    for job in jobs:
+        if job.id in posts:
+            postings.append(job)
+
+    return postings
+
+
+
+def find_person_base():
     """
     Asks the user for the first and last name of a person
     they know and searches accounts of InCollege for the username of 
@@ -740,8 +1577,7 @@ def find_person():
     None
         returns back to user menu after completion.
     """
-    print("requests for u:  ")
-    #current_account.show_friend_requests()
+    
     print("")
     print("######################################")
     print("##  Please enter the first name of  ##")
@@ -760,6 +1596,32 @@ def find_person():
 
     last_name = input(":: ")
 
+    username = find_person(first_name, last_name)
+
+    if username != "EXIT":
+        print("   Press S to send request and R to return  ")
+        inp=input(":: ")
+        
+        if inp:
+            inp = inp[0].upper()
+
+        while inp!='R' and inp!='S':
+            print("Incorrect input.")
+            inp=input(":: ")
+        
+        if inp=='R':
+        
+            return
+        
+        elif inp=='S':
+            send_request(username)
+            return
+    
+    input("\nPress enter to continue... ")
+
+
+def find_person(first_name, last_name):
+
     is_user = True
     username = check_name(first_name, last_name)
     if username == "EXIT":
@@ -769,19 +1631,8 @@ def find_person():
         print("")
         print("#############################################")
         print(f"  The username of {first_name} {last_name} is: {username}")
-        print("   Press S to send request and R to return  ")
         print("#############################################")    
         print("")
-        inp=input(":: ")
-        while inp!='R' and inp!='S':
-            print("Incorrect input.")
-            inp=input(":: ")
-        if inp=='R':
-            return
-        elif inp=='S':
-            current_account.send_friend_request(username)
-            print("Sent friend request to ", username,"!\n")
-            return
     else:
         print("")
         print("####################################")
@@ -791,7 +1642,14 @@ def find_person():
         print("####################################")    
         print("")
 
-    input(">> ")
+    return username
+
+
+def send_request(username):
+    current_account.send_friend_request(username)
+    print("Sent friend request to ", username,"!\n")
+    current_account.active_requests += username+","
+    current_account.save_active_requests()
 
 def get_account(usrn):
     """
@@ -838,41 +1696,6 @@ def get_empty_slot():
     except ValueError:
         return -1
 
-def initialize_database():
-    """Initalizes the database, must be run at start-up."""
-    connection = sqlite3.connect("accounts.db")  # Connect to a SQLite database (creates it if it doesn't exist)
-    cursor = connection.cursor()
-
-    # Create a table to store account information
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS accounts (
-        username TEXT PRIMARY KEY,
-        password TEXT,
-        firstname TEXT,
-        lastname TEXT,
-        emailAd TEXT,
-        smsAd TEXT,
-        targetAD TEXT,
-        language TEXT,
-        friend_requests TEXT,
-        friends TEXT
-    )
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS jobs (
-        title TEXT,
-        desc TEXT,
-        employer TEXT,
-        location TEXT,
-        salary TEXT,
-        firstname TEXT,
-        lastname TEXT
-    )
-    """)
-
-    connection.commit()
-    connection.close()
 
 def learn_skill():
     """ 
@@ -928,17 +1751,11 @@ def learn_skill():
 
 def load_accounts():
     """Loads all the currently existing accounts from the SQLite database on start-up."""
-    connection = sqlite3.connect("accounts.db")
-    cursor = connection.cursor()
-
-    cursor.execute("SELECT * FROM accounts")
-
-    rows = cursor.fetchall()
+    rows = db.fetch_all("accounts")
 
     for acc_data in rows:
         load_account_data(acc_data)
   
-    connection.close()
 
 def load_account_data(data):
     """ 
@@ -952,21 +1769,40 @@ def load_account_data(data):
     """
     if data:
         accounts.append(Account())  # Append a new Account instance
-        accounts[-1].create(data[0], data[1], data[2], data[3],data[4],data[5],data[6],data[7],data[8],data[9])  # Provide the 'username', 'password', 'firstname', 'lastname' arguments
+        accounts[-1].create(data[0], # username
+                            data[1], # password
+                            data[2], # firstname
+                            data[3]) # lastname
+        accounts[-1].set_emailAd(int(data[4])), # emailAD
+        accounts[-1].set_smsAd(int(data[5])), # smsAD
+        accounts[-1].set_targetAd(int(data[6])), # targetAD
+        accounts[-1].set_language(data[7]), # language
+        accounts[-1].set_friend_requests(data[8]), # friend_requests
+        accounts[-1].active_requests = data[9]   # active_requests
+        accounts[-1].set_friends(data[10]) # friends
+        accounts[-1].has_profile = int(data[11])   # has_profile
+        accounts[-1].set_title(data[12]) # title
+        accounts[-1].set_major(data[13]) # major
+        accounts[-1].set_uni(data[14])   # university
+        accounts[-1].set_info(data[15])  # info
+        accounts[-1].set_exp(data[16])   # experience
+        accounts[-1].set_edu(data[17])   # education
+        accounts[-1].postings = data[18]   # job postings
+        accounts[-1].applied = data[19]   # postings applied
+        accounts[-1].saved = data[20]   # postings saved
+
 
 def load_jobs():
     """Loads all the currently existing job postings from the SQLite database on start-up."""
-    connection = sqlite3.connect("accounts.db")
-    cursor = connection.cursor()
+    global job_id
 
-    cursor.execute("SELECT * FROM jobs")
-
-    rows = cursor.fetchall()
+    rows = db.fetch_all("jobs")
 
     for job_data in rows:
         load_job_data(job_data)
-  
-    connection.close()
+
+    if jobs:
+        job_id = jobs[-1].id + 1 ## sets the job id to 1 + the current highest id
 
 def load_job_data(data):
     """ 
@@ -980,10 +1816,32 @@ def load_job_data(data):
     """
     if data:
         jobs.append(Job())  # Append a new Account instance
-        jobs[-1].create(data[0], data[1], data[2], data[3], data[4])  # Provide the 'title', 'description', 'employer', 'location', 'salary' arguments
-        jobs[-1].set_poster(data[5], data[6])   # Provide the 'firstname' and 'lastname' arguments
-        
-def login():
+        jobs[-1].id = int(data[0])    # id
+        jobs[-1].create(data[1], # title
+                        data[2], # description
+                        data[3], # employer
+                        data[4], # location
+                        data[5]) # salary
+        jobs[-1].set_poster(data[6],  # firstname
+                            data[7])  # lastname
+        jobs[-1].applications = data[8] #applications
+
+
+def set_current_account(account):
+    global current_account
+
+    current_account = account
+
+def get_current_account():
+    return current_account
+
+def set_testing(state):
+    global _testing_
+
+    _testing_ = state
+
+
+def login_base():
     """ 
     Menu loop for logging in,
     prompts the user to input a username and password.
@@ -994,8 +1852,6 @@ def login():
     None
         returns back to main menu after completion or on return command.
     """
-
-    global current_account
 
     is_correct = False
     while not is_correct:
@@ -1017,30 +1873,53 @@ def login():
         print("######################################")
         print("")
         password = input(":: " )
-        is_password = check_password(username, password)
-
         print("")
-        if is_password:
-            is_correct = True
-            current_account = accounts[get_account(username)]
-            print("You have successfully logged in.")
-            reqs=current_account.show_friend_requests()
-            for i in reqs:
-                if i=='':
-                    current_account.reject_friend_request(i)
-                    continue
-                print("You have a new friend request: ",i,"\n")
-                print("Press 'A' to accept, and any other key to reject.\n")
-                inp=input(":: ")
-                if inp=='A':
-                    current_account.accept_friend_request(i)
-                else:
-                    current_account.reject_friend_request(i)
-                    print("Rejected ",i,"'s request!\n")
-            #print(current_account.get_friends())
-        else:
-            print("Incorrect username / password, please try again.")
+
+        is_correct = login(username, password)
+
+        
     return
+
+def login(username, password):
+
+    is_password = check_password(username, password)
+    
+    if is_password:
+        set_current_account(accounts[get_account(username)])
+        print("You have successfully logged in.")
+        return True
+    else:
+        print("Incorrect username / password, please try again.")
+        return False
+
+
+def check_requests():
+    reqs=current_account.show_friend_requests()
+    for i in reqs:
+        print("You have a new friend request: ",i,"\n")
+        print("Press 'A' to accept, or 'R' to reject.\n")
+        inp=input(":: ")
+        if inp:
+            inp = inp[0].upper()
+            
+        while inp!='R' and inp!='A':
+            print("Incorrect input.")
+            inp=input(":: ")
+
+        if inp=='A':
+            accept_request(True, i)
+        else:
+            accept_request(False, i)
+
+def accept_request(is_accept, user):
+    if is_accept:
+        current_account.accept_friend_request(user)
+        print("Accepted "+user+"'s request!\n")
+    else:
+        current_account.reject_friend_request(user)
+        print("Rejected "+user+"'s request!\n")
+
+
 
 def menu_message():
     """Displays a message on the main menu."""
@@ -1065,38 +1944,41 @@ def play_video():
     print("")   
 
     input(">> ")
-            
-def save_accounts():
-    """Saves all currently existing accounts to the SQLite database."""
-    connection = sqlite3.connect("accounts.db")
-    cursor = connection.cursor()
+        
 
-    # Clear the existing data in the 'accounts' table
-    cursor.execute("DELETE FROM accounts")
+def notify_if_deleted():
 
-    for acc in accounts:
-        if acc:
-            cursor.execute("INSERT INTO accounts (username, password, firstname, lastname,emailAd, smsAd, targetAd, language, friend_requests, friends) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-                                (acc.get_username(), acc.get_password(), acc.get_firstname(), acc.get_lastname(),acc.get_emailAd(),acc.get_smsAd(),acc.get_targetAd(), acc.get_language(), acc.get_friend_requests(), acc.get_friends()))
+    ############## Notify if job deleted ################
+    saved = []
+    applied = []
 
-    connection.commit()
-    connection.close()
+    ## Get the accounts saved by user
+    if current_account.saved:
+        saved = current_account.saved.split(",")
 
-def save_jobs():
-    """Saves all currently existing jobs to the SQLite database."""
-    connection = sqlite3.connect("accounts.db")
-    cursor = connection.cursor()
-
-    # Clear the existing data in the 'jobs' table
-    cursor.execute("DELETE FROM jobs")
+    ## Get the accounts applied by user
+    if current_account.applied:
+        applied = current_account.applied.split(",")
+    
 
     for job in jobs:
-        if job:
-            cursor.execute("INSERT INTO jobs (title, desc, employer, location, salary, firstname, lastname) VALUES (?, ?, ?, ?, ?, ?, ?)", 
-                                (job.title, job.description, job.employer, job.location, job.salary, job.get_firstname(), job.get_lastname()))
+        # if the saved job still exists, delete it from list
+        if str(job.id) in saved:
+            saved.remove(str(job.id))
+            applied.remove(job.title)
 
-    connection.commit()
-    connection.close()
+
+    ## Unsave the jobs still remaining in the list (The jobs that were deleted)
+    for unsave in saved:
+        current_account.unsave_post(unsave)
+
+    ## Unapply and notify the user if the jobs still remaining in the list (The jobs that were deleted)
+    for unapply in applied:
+        current_account.unapply_for_job(unapply)
+        print("\nThe job you applied for has been deleted! -> "+unapply+"\n")
+    ####################################################
+
+
 
 def search_job():
     """
@@ -1107,13 +1989,19 @@ def search_job():
     None
         returns back to user menu after completion.
     """
+
+    
+    notify_if_deleted()
+
+
     while True:
         print("")
-        print("####################################")
-        print("#  Would you like to (P)ost a job  #")
-        print("#   (L)ook at the job postings,    #")
-        print("#  or (R)eturn to the last page?   #")
-        print("####################################")    
+        print("######################################")
+        print("##  Would you like to (P)ost a job  ##")
+        print("##   (L)ook at the job postings,    ##")
+        print("##   (V)iew your own job postings,  ##")
+        print("##  or (R)eturn to the last page?   ##")
+        print("######################################")  
         print("")
         
         main_input = input(":: ")
@@ -1121,10 +2009,14 @@ def search_job():
         print("")
 
         if main_input == "P":
-            create_job()
+            create_job_base()
 
         elif main_input == "L":
-            display_jobs()
+            display_jobs_menu()
+        
+        elif main_input == "V":
+            post = get_posted_postings()
+            display_jobs(post, is_owned=True)
             
         elif main_input == "R":
             return
@@ -1133,7 +2025,7 @@ def search_job():
             print ("That is not a valid command!")
             print("")  
 
-def search_user():
+def search_user_base():
     """
     Asks the user for the first and last name of 
         a person and checks if that person is an InCollege member
@@ -1164,6 +2056,13 @@ def search_user():
 
     last_name = input(":: ")
 
+    search_user(first_name, last_name)
+
+    input("\nPress enter to continue... ")
+
+
+def search_user(first_name, last_name):
+
     is_user = True
     username = check_name(first_name, last_name)
     if username == "EXIT":
@@ -1186,8 +2085,6 @@ def search_user():
         print("##   Press 'enter' to continue.   ##")
         print("####################################")
         print("")
-
-    input(">> ")
 
 def useful_links():
 
@@ -1346,7 +2243,7 @@ def general():
         user_input = user_input[0].upper()
 
         if user_input == "S" and current_account == None:
-            create_account()
+            create_account_base()
         
         elif user_input == "H":
             help_center()
@@ -1673,7 +2570,7 @@ def user_agreement():
 """
 
 def privacy_policy():
-    print("\n#############################################")
+    print("\n###############################################")
     print("## You entrust us with your information when ##")
     print("## you use our services. We make a lot of    ##")
     print("## effort to safeguard your information and  ##")
@@ -1752,12 +2649,12 @@ def brand_policy():
 
 def guest_controls():
     if current_account == None:
-        print("\n##############################################")
+        print("\n################################################")
         print("##          Guest Controls: Information       ##")
         print("## Guest Controls helps our users turn off    ##")
         print("## advertising alerts. Kindly login to use    ##")
         print("## this feature.                              ##")
-        print("##############################################\n")
+        print("################################################\n")
         return
     
     while True:
@@ -1773,63 +2670,132 @@ def guest_controls():
         inp = input(":: " )
         if inp[0].upper() == 'R':
             return
-        elif inp == '1':
-            current_account.update_ad(email=False)
-        elif inp == '2':
-            current_account.update_ad(sms=False)
-        elif inp == '3':
-            current_account.update_ad(target=False)
+        
+        if inp in ["1", "2", "3"]:
+            update_ad_setting(inp)
         else:
             print("Invalid input")
 
+
+def update_ad_setting(setting):
+    if setting == '1':
+        current_account.update_ad(email=False)
+    if setting == '2':
+        current_account.update_ad(sms=False)
+    if setting == '3':
+        current_account.update_ad(target=False)
+
+
 def languages():
     if current_account == None:
-        print("\n##############################################")
+        print("\n################################################")
         print("##         Language Preferences: Info         ##")
         print("## Kindly login to your account to set your   ##")
         print("## language preferences.                      ##")
-        print("##############################################\n")
+        print("################################################\n")
         return
     
     while True:
         current_account.show_language()
-        print("##############################################")
+        print("###############################################")
         print("##           Language Preferences Menu       ##")
         print("##  1. English                               ##")
         print("##  2. Spanish                               ##")
         print("##  (R)eturn to Previous Menu                ##")
-        print("##############################################\n")
+        print("###############################################\n")
         print("")
         inp = input(">> ")
         if inp[0].upper() == 'R':
             return
         elif inp == '1':
-            current_account.update_language(english=True)
+            current_account.set_language("English")
         elif inp == '2':
-            current_account.update_language(spanish=True)
+            current_account.set_language("Spanish")
         else:
             print("Invalid input")
 
 def show_my_network():
-    print("Your connections:\n")
-    friend_list=current_account.get_friends().split(',')
-    if friend_list==[] or friend_list==['']:
-        print("None.\n")
-        return
-    for i,v in enumerate(friend_list):
-        print(i+1,'. ',v,'\n')
-    print("Enter the number of the connection you want to remove or enter 'R' to return.\n")
+    while 1:
+        print("")
+        print("##############################################")
+        print("")  
+        print("Your connections:\n")
+        friend_list=current_account.get_friends().split(',')
+        if friend_list==[] or friend_list==['']:
+            print("None.\n")
+            return
+        for i,v in enumerate(friend_list):
+            print(i+1,'. ',v,'\n')
+
+        print("")
+        print("## Would you like to (V)iew their profiles  ##")
+        print("##             (D)elete the friend          ##")
+        print("##                or (R)eturn               ##")
+        print("##############################################")  
+
+        print("")
+        user_input = input(":: ")
+        user_input = user_input[0].upper()
+
+        if user_input == "R":
+            return
+        elif user_input == "D":
+            delete_friend(friend_list)
+        elif user_input =="V":
+            view_friend_profiles(current_account)
+        else:
+            print("Not a Valid input!")
+
+def delete_friend(friend_list):
+    print("Enter the number of the connection you want to remove or enter '0' to return.\n")
     inpStr=input(":: ")
-    if inpStr=='R':
+
+    try:
+        inp=int(inpStr)-1
+    except ValueError:
+        print("Not a valid input!")
         return
-    inp=int(inpStr)-1
+    
+    if inp == -1:
+        return
+    
     if inp in range(len(friend_list)):
         current_account.remove_friend(friend_list[inp])
         print("Successfully removed ",friend_list[inp]," from your network!\n")
-    return
+    else:
+        print("Not a valid input!")
+
+
+def view_friend_profiles(self):
+    """
+    Displays the profiles of friends.
+    """
+    if not self.friends:
+        print("You don't have any friends yet.")
+        return
+
+    friend_list = self.friends.split(',')
+
+    friend_choice = int(input("Enter the number of the friend to view their profile (or 0 to go back): "))
+    print("")
+    if 0 < friend_choice <= len(friend_list):
+        friend = accounts[get_account(friend_list[friend_choice - 1])]
+        if friend.has_profile:
+            view_profile(friend)
+        else:
+            print("Profile not available.")
+    elif friend_choice == 0:
+        return
+    else:
+        print("Invalid choice.")
 
 def pending_friend_requests():
     print("Here are your pending friend requests: \n")
+    results = current_account.active_requests.split(",")[0:-1]
+    for result in results:
+        print("-> "+result+"\n")
+    
+    input("\npress enter to return...")
 
 def unset_current_account():
     """ Unsets the current account"""
@@ -1846,6 +2812,9 @@ def user_menu():
     None
         returns back to main menu after completion or on return command.
     """
+
+    check_requests()   ## Check for friend requests
+
     is_logged_in = True
     while is_logged_in:
         name = current_account.get_username()
@@ -1855,7 +2824,8 @@ def user_menu():
         print("##################################################")
         print("##", buffer1,   "Hello", name + "!", buffer2,  "##")
         print("##    Would you like to (S)earch for a job,     ##")
-        print("## (F)ind someone you know, or (L)earn a skill. ##")
+        print("##  (F)ind someone you know, (L)earn a skill.   ##")
+        print("## (E)dit your profile, or (V)iew your profile  ##") 
         print("##    You can also (R)eturn to the main menu.   ##")                
         print("##################################################")
         print("")
@@ -1878,7 +2848,7 @@ def user_menu():
             search_job()
 
         elif main_input == "F":
-            find_person()
+            find_person_base()
 
         elif main_input == "L":
             learn_skill()
@@ -1898,12 +2868,49 @@ def user_menu():
 
         elif main_input=="P":
             pending_friend_requests()
+
+        elif main_input=="E":
+            create_profile()
+
+        elif main_input=="V":
+            view_profile(current_account)
+        
         else:
             print ("That is not a valid command!") 
 
+
+
+def view_profile(user):
+
+    print("")
+    print("##################################################")
+    print("##", user.get_firstname(), user.get_lastname())
+    print("##")
+    print("##  Title:", user.get_title())
+    print("##  Major:", user.get_major())
+    print("##  University:", user.get_uni())
+    print("##")
+    print("##  Info:", user.get_info())
+    print("##")
+    print("##  Experience:\n", user.get_exp())             
+    print("##")
+    print("##  Education:\n", user.get_edu())
+    print("##")     
+    print("##################################################")
+    print("")
+    main_input = input("press enter to return... ")
+
+
+
+
 def main():
     """Menu Loop for main menu."""
-    initialize_database()
+
+    ## Load Database
+    db.load()
+
+    ## Turn off testing mode, when program is run normally.
+    set_testing(False)
 
     is_running = True
     load_accounts()
@@ -1937,13 +2944,13 @@ def main():
         main_input = main_input[0].upper()
 
         if main_input == "L":
-            login()
+            login_base()
 
         elif main_input == "C":
-            create_account()
+            create_account_base()
 
         elif main_input == "S":
-            search_user()
+            search_user_base()
 
         elif main_input == "V":
             play_video()
