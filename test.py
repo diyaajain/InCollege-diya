@@ -126,7 +126,6 @@ def user_input_login_on_second_attempt(inputs, bad_username, good_pass, good_use
 def user_input_return(inputs, return_key):
     inputs.append(return_key)
 
-
 ############## USEFUL FIXTURES ########################
     
 ## Run this when you work with the database!
