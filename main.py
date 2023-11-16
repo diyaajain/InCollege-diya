@@ -144,9 +144,6 @@
 from math import ceil, floor
 import string
 
-from flask import Flask, render_template
-app = Flask(__name__)
-
 import database
 
 _testing_ = True
