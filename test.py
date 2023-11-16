@@ -5,7 +5,7 @@ from main import *
 ## HOW TO MAKE TEST CASES ##
 
 # 1. If your test case needs to access the database for any reason, call the 'setup_and_teardown' fixture
-#    as an argument, This should no longer be needed as the databases should be seperate..  
+#    as an argument, This should no longer be needed as the databases should be seperate.  
 #
 # 2. If you need a string to test, and the criteria for the string may change in the future;
 #    then make a new VALUE fixture in the section "VALUES FOR TESTING" if said string doesn't
@@ -596,7 +596,7 @@ def test_job_listing(capsys, prefab_account, fill_jobs, job_title):
 
     ## get all posts then disply them
     posts = get_all_postings()
-    display_job_list(posts)
+    display_jobs(posts)
 
     captured = capsys.readouterr()
     assert job_title+"0" in captured.out
@@ -606,7 +606,7 @@ def test_job_details_display(capsys, prefab_account, fill_jobs, job_title):
 
     posts = get_all_postings()
 
-    display_post(posts[0])
+    post_info(posts[0])
     captured = capsys.readouterr()
     assert "Title: " + job_title+"0" in captured.out
 
@@ -706,9 +706,9 @@ def test_viewing_applied_jobs(capsys, fill_accounts, fill_jobs, job_title):
 
     account.apply_for_job(posts[1], "12/01/2023", "01/01/2024", "I am a good fit for this job! ")
 
-    posts = get_applied_postings(False)
+    posts = get_applied_postings(True)
     
-    display_job_list(posts)
+    display_jobs(posts)
 
     captured = capsys.readouterr()
     assert job_title+"1" in captured.out
@@ -724,9 +724,9 @@ def test_viewing_jobs_not_applied_for(capsys, fill_accounts, fill_jobs, job_titl
 
     account.apply_for_job(posts[0], "12/01/2023", "01/01/2024", "I am a good fit for this job! ")
 
-    posts = get_applied_postings(True)
+    posts = get_applied_postings(False)
     
-    display_job_list(posts)
+    display_jobs(posts)
 
     captured = capsys.readouterr()
     assert job_title+"1" in captured.out
@@ -743,8 +743,7 @@ def test_retrieving_saved_jobs(capsys, fill_accounts, fill_jobs, job_title):
 
     posts = get_saved_postings()
 
-    display_job_list(posts)
+    display_jobs(posts)
 
     captured = capsys.readouterr()
     assert job_title+"0" in captured.out
-

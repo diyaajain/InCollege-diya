@@ -14,6 +14,133 @@
 ##                  Kapoor, Vatsal                                    ##
 ########################################################################
 ########################################################################
+
+
+########################################################################
+########################### Hierarchy ##################################
+########################################################################
+## main()
+##  └> load_accounts()
+##  |   └> load_account_data()
+##  └> load_jobs()
+##  |   └> load_job_data()
+##  └> "C" : create_account_base()
+##  |       └> check_username()
+##  |       └> check_valid_password()
+##  |       └> create_account()
+##  └> "I" : important_links()
+##  |       └> "1" : copyright_notice()
+##  |       └> "2" : about()
+##  |       └> "3" : accessibility()
+##  |       └> "4" : user_agreement()
+##  |       └> "5" : privacy_policy()
+##  |       └> "6" : cookie_policy()
+##  |       └> "7" : copyright_policy()
+##  |       └> "8" : brand_policy()
+##  |       └> "9" : guest_controls()
+##  |       └> "10" : languages()
+##  └> "L" : login_base()
+##  |       └> : login()
+##  |           └> check_password()
+##  |           └> set_current_account()
+##  └> "S" : search_user_base()
+##  |       └> search_user()
+##  |           └> check_name()
+##  └> "U" : useful_links()
+##  |       └> "1" : general()
+##  |       |       └> "A" : about()
+##  |       |       └> "B" : blog()
+##  |       |       └> "C" : careers()
+##  |       |       └> "D" : developers()
+##  |       |       └> "H" : help_center()
+##  |       |       └> "P" : press()
+##  |       |       └> "S" : create_account_base()
+##  |       |               └> check_username()
+##  |       |               └> check_valid_password()
+##  |       |               └> create_account()
+##  |       └> "2" : browse_incollege()
+##  |       └> "3" : business_solutions()
+##  |       └> "4" : directories()
+##  └> "V" : play_video()
+##  |
+##  └> current_account not None : user_menu()
+##  |                            └> check_requests()
+##  |                            └> check_unread_messages()
+##  |                            |  └> "A" : accept_request(True)
+##  |                            |  └> "R" : accept_request(False)
+##  |                            └> "A" : show_full_network()
+##  |                            |       └> "S" : send_message_base()
+##  |                            |               └> send_message()
+##  |                            └> "C" : check_inbox()
+##  |                            |       └> view_message_base()
+##  |                            |          └> view_message()
+##  |                            |          └> "R" : send_message()
+##  |                            └> "E" : create_profile()
+##  |                            |       └> remove_line()
+##  |                            └> "F" : find_person_base()
+##  |                            |       └> find_person()
+##  |                            |       |  └> check_name()
+##  |                            |       └> "S" : send_request()
+##  |                            └> "I" : important_links()
+##  |                            |       └> "1" : copyright_notice()
+##  |                            |       └> "2" : about()
+##  |                            |       └> "3" : accessibility()
+##  |                            |       └> "4" : user_agreement()
+##  |                            |       └> "5" : privacy_policy()
+##  |                            |       |       └> "G" : guest_controls()
+##  |                            |       |               └> update_ad_setting()
+##  |                            |       └> "6" : cookie_policy()
+##  |                            |       └> "7" : copyright_policy()
+##  |                            |       └> "8" : brand_policy()
+##  |                            |       └> "9" : guest_controls()
+##  |                            |       |       └> update_ad_setting()
+##  |                            |       └> "10" : languages()
+##  |                            └> "L" : learn_skill()
+##  |                            └> "N" : show_my_network()
+##  |                            |       └> "D" : delete_friend()
+##  |                            |       └> "S" : send_message_base()
+##  |                            |       |       └> send_message()
+##  |                            |       └> "V" : view_friend_profiles()
+##  |                            |               └> view_profile()
+##  |                            └> "P" : pending_friend_requests()
+##  |                            └> "R" : unset_current_account()
+##  |                            └> "S" : search_job()
+##  |                            |       └> notify_if_deleted()
+##  |                            |       └> "L" : display_jobs_menu()
+##  |                            |       |       └> "A" : get_all_postings()
+##  |                            |       |       └> "N" : get_applied_postings(False)
+##  |                            |       |       └> "P" : get_applied_postings(True)
+##  |                            |       |       └> "S" : get_saved_postings()
+##  |                            |       |       └> display_jobs_base(False)
+##  |                            |       |          └> display_jobs()
+##  |                            |       |          └> show_post()
+##  |                            |       |              └> post_info()
+##  |                            |       |              └> "A" add_application()
+##  |                            |       |              └> "D" delete_job()
+##  |                            |       └> "P" : create_job_base()
+##  |                            |       |       └> create_job()
+##  |                            |       |       └> incr_jobs()
+##  |                            |       └> "V" : get_posted_postings()
+##  |                            |           └> : display_jobs_base(True)
+##  |                            |                  └> display_jobs()
+##  |                            |                  └> show_post()
+##  |                            |                      └> post_info()
+##  |                            |                      └> "D" delete_job()
+##  |                            └> "U" : useful_links()
+##  |                            |       └> "1" : general()
+##  |                            |       |       └> "A" : about()
+##  |                            |       |       └> "B" : blog()
+##  |                            |       |       └> "C" : careers()
+##  |                            |       |       └> "D" : developers()
+##  |                            |       |       └> "H" : help_center()
+##  |                            |       |       └> "P" : press()
+##  |                            |       └> "2" : browse_incollege()
+##  |                            |       └> "3" : business_solutions()
+##  |                            |       └> "4" : directories()
+##  |                            └> "V" : view_profile()
+########################################################################
+########################################################################
+
 from math import ceil, floor
 import string
 
@@ -91,6 +218,7 @@ class Account:
         self.active_requests = ""
 
         self.has_profile = 0
+        self.__is_plus = 0
 
         self.__title = ""
         self.__major = ""
@@ -102,6 +230,9 @@ class Account:
         self.postings = ""
         self.applied = ""
         self.saved = ""
+
+        self.inbox = ""
+        self.new_job = ""
 
 
     
@@ -132,8 +263,8 @@ class Account:
     def save_initial_data(self):
         """ Saves the default information of the account"""
         if not _testing_:
-            db.update("accounts", self.__username, ["password", "firstname", "lastname", "emailAd", "smsAd", "targetAd", "language"], 
-                  [self.__password, self.__firstname, self.__lastname, self.__email_ad, self.__sms_ad, self.__target_ad, self.__language])
+            db.update("accounts", self.__username, ["password", "firstname", "lastname", "emailAd", "smsAd", "targetAd", "language", "is_plus"], 
+                  [self.__password, self.__firstname, self.__lastname, self.__email_ad, self.__sms_ad, self.__target_ad, self.__language, self.__is_plus])
     
     def save_profile(self):
         """ Saves the profile information of the account"""
@@ -271,6 +402,11 @@ class Account:
     def get_posted(self):
         return self.postings
 
+    def get_plus(self):
+        return self.__is_plus
+
+    def set_plus(self, status):
+        self.__is_plus = status
 
     def set_title(self, title):
         """
@@ -445,8 +581,6 @@ class Account:
         self.friend_requests = ','.join(reqs)
 
         if not _testing_:
-            new_friend = accounts[get_account(friend_request)]
-            new_friend_username = new_friend.get_username()
 
             # Update the friend_requests and friends column with the updated data
             db.update("accounts", self.__username, ["friend_requests", "friends"] , [self.friend_requests, self.friends])
@@ -471,8 +605,6 @@ class Account:
         self.friend_requests=','.join(reqs)
 
         if not _testing_:
-            non_friend = accounts[get_account(friend_request)]
-            non_friend_username = non_friend.get_username()
             
             # Update the friend_requests column with the updated data
             db.update("accounts", self.__username, "friend_requests", self.friend_requests)
@@ -573,8 +705,53 @@ class Account:
 
         if not _testing_:
             db.update("accounts", self.__username, "applied", self.applied)
+    
+    def receive_message(self, message):
+
+        if not self.inbox:
+            self.inbox = message
+        else:
+            self.inbox += '||,||' + message
+
+        if not _testing_:
+            db.update("accounts", self.__username, "inbox", self.inbox)
+
+    def delete_message(self, message):
+
+        if not self.inbox:
+            return
+
+        inbox = self.inbox.split("||,||")
+        inbox.remove(message)
+        self.inbox = "||,||".join(inbox)
+
+        if not _testing_:
+            db.update("accounts", self.__username, "inbox", self.inbox)
 
 
+    def mark_read(self, message, is_read):
+        
+        # check if messages
+        if not self.inbox:
+            return
+
+        inbox = self.inbox.split("||,||")
+        try:
+            index = inbox.index(message)
+        except ValueError:
+            return
+
+        ## change first character of message from 0 to 1
+        if inbox[index][0] == "0" and is_read:
+            inbox[index] = "1"+inbox[index][1:len(inbox[index])]
+            self.inbox = "||,||".join(inbox)
+        ## change first character of message from 1 to 0
+        elif inbox[index][0] == "1" and not is_read:
+            inbox[index] = "0"+inbox[index][1:len(inbox[index])]
+            self.inbox = "||,||".join(inbox)
+
+        if not _testing_:
+            db.update("accounts", self.__username, "inbox", self.inbox)
 
 
 
@@ -914,6 +1091,14 @@ def create_account_base():
     last_name = input(":: " )
 
     create_account(username, password, first_name, last_name)
+
+    user_input = input("\nWould you like to sign up for a Plus membership? **$10/month** (Y/N): ")
+    if user_input and user_input[0].upper() == "Y":
+        print("\nYou have selected the Plus membership option.\n")
+        accounts[-1].set_plus(1)
+    else:
+        print("\nYou have selected the Standard membership option.\n")
+    
     if not _testing_:
         db.create("accounts", username)
     accounts[-1].save_initial_data()
@@ -1022,12 +1207,22 @@ def create_job(id, title, desc, employ, loct, salary):
     print("")
     print("Job successfully posted!")
 
+    i = 0
+    for i in range(len(accounts)): ## iterates through all accounts
+        if accounts[i]:            ## checks if account exists
+            if accounts[i].get_username() != current_account.get_username():    
+                if not accounts[i].new_job:
+                    new_job_str = title
+                else:
+                    new_job_str = accounts[i].new_job + "," + title      
+                accounts[i].new_job = new_job_str
+                if not _testing_:
+                    db.update("accounts", accounts[i].get_username(), "new_job", accounts[i].new_job)
+
     if not _testing_:
         db.create("jobs", id)
 
     jobs[-1].save()
-
-
     
 
 def create_profile():
@@ -1238,26 +1433,6 @@ def create_profile():
     current_account.save_profile()
 
 
-def delete_job(job):
-
-    ## delete the job from the job list
-    jobs.remove(job)
-
-    ## remove posting from account
-    postings = current_account.postings.split(",")
-
-    if str(job.id) in postings:
-        postings.remove(str(job.id))
-    
-    current_account.postings = ",".join(postings)
-
-    print("\nJob deleted successfully!\n")
-    
-    if not _testing_:
-        ## update the database
-        db.update("accounts", current_account.get_username(), "postings", current_account.postings)
-
-
 def remove_line(text):
     """
     Removes a line of text from a given paragraph.
@@ -1279,6 +1454,26 @@ def remove_line(text):
         result += line
         result += "\n"
     return result
+
+
+def delete_job(job):
+
+    ## delete the job from the job list
+    jobs.remove(job)
+
+    ## remove posting from account
+    postings = current_account.postings.split(",")
+
+    if str(job.id) in postings:
+        postings.remove(str(job.id))
+    
+    current_account.postings = ",".join(postings)
+
+    print("\nJob deleted successfully!\n")
+    
+    if not _testing_:
+        ## update the database
+        db.update("accounts", current_account.get_username(), "postings", current_account.postings)
 
 
 def show_post(post):
@@ -1304,7 +1499,7 @@ def show_post(post):
     if post.get_firstname() == current_account.get_firstname() and post.get_lastname() == current_account.get_lastname():
         is_users_post = True
 
-    display_post(post)
+    post_info(post)
     
     if is_users_post:
         while True:
@@ -1359,7 +1554,7 @@ def add_application(post):
     info = input("\nWhy do you think you will be a good fit for this job?\n\n:: ")
     current_account.apply_for_job(post, grad_date, start_date, info)
 
-def display_post(post):
+def post_info(post):
     print("")
     print("##################################################")
     print("##")
@@ -1375,7 +1570,7 @@ def display_post(post):
     print("")
 
 
-def display_jobs(posts, is_owned=False):
+def display_jobs_base(posts, is_owned=False):
     """
     Displays all the jobs that the user requested.
 
@@ -1395,7 +1590,7 @@ def display_jobs(posts, is_owned=False):
                 print("These are the jobs that are available: ")
             print("")
 
-            display_job_list(posts)
+            display_jobs(posts)
 
             print("")
             user_input = input("Enter the number of the job you want to view or enter '0' to return.\n\n:: ")
@@ -1430,7 +1625,7 @@ def display_jobs(posts, is_owned=False):
         print("")
 
     
-def display_job_list(posts):
+def display_jobs(posts):
     postings = []
     saved = []
     applied = []
@@ -1485,14 +1680,10 @@ def display_jobs_menu():
 
         user_input = input(":: ")
 
-        if user_input:
-            user_input = user_input[0].upper()
+    if user_input:
+        user_input = user_input[0].upper()
 
-        print("")
-
-    
-
-    
+    print("")
 
     if user_input == "R":
         return
@@ -1507,9 +1698,9 @@ def display_jobs_menu():
         posting = get_applied_postings()
 
     elif user_input == "N":
-        posting = get_applied_postings(switch=True)
+        posting = get_applied_postings(switch=False)
         
-    display_jobs(posting)
+    display_jobs_base(posting)
 
 
 def get_all_postings():
@@ -1531,7 +1722,7 @@ def get_saved_postings():
 
     return postings
 
-def get_applied_postings(switch = False):
+def get_applied_postings(switch = True):
 
     applied = []
 
@@ -1541,9 +1732,9 @@ def get_applied_postings(switch = False):
     postings = []
 
     for job in jobs:
-        if job.title in applied and not switch:
+        if job.title in applied and switch:
             postings.append(job)
-        elif job.title not in applied and switch:
+        elif job.title not in applied and not switch:
             postings.append(job)
 
     return postings
@@ -1788,9 +1979,11 @@ def load_account_data(data):
         accounts[-1].set_exp(data[16])   # experience
         accounts[-1].set_edu(data[17])   # education
         accounts[-1].postings = data[18]   # job postings
-        accounts[-1].applied = data[19]   # postings applied
-        accounts[-1].saved = data[20]   # postings saved
-
+        accounts[-1].applied = data[19]   # applied
+        accounts[-1].saved = data[20]   # saved
+        accounts[-1].set_plus(data[21])   # is_plus
+        accounts[-1].inbox = data[22]   # inbox
+        accounts[-1].new_job = data[23] # new_job
 
 def load_jobs():
     """Loads all the currently existing job postings from the SQLite database on start-up."""
@@ -1992,7 +2185,7 @@ def search_job():
 
     
     notify_if_deleted()
-
+    job_notifications()
 
     while True:
         print("")
@@ -2016,7 +2209,7 @@ def search_job():
         
         elif main_input == "V":
             post = get_posted_postings()
-            display_jobs(post, is_owned=True)
+            display_jobs_base(post, is_owned=True)
             
         elif main_input == "R":
             return
@@ -2727,9 +2920,9 @@ def show_my_network():
         for i,v in enumerate(friend_list):
             print(i+1,'. ',v,'\n')
 
-        print("")
         print("## Would you like to (V)iew their profiles  ##")
-        print("##             (D)elete the friend          ##")
+        print("##             (S)end a message             ##")
+        print("##            (D)elete the friend           ##")
         print("##                or (R)eturn               ##")
         print("##############################################")  
 
@@ -2739,10 +2932,43 @@ def show_my_network():
 
         if user_input == "R":
             return
+        elif user_input == "S":
+            send_message_base(friend_list)
         elif user_input == "D":
             delete_friend(friend_list)
         elif user_input =="V":
             view_friend_profiles(current_account)
+        else:
+            print("Not a Valid input!")
+
+def show_full_network():
+    while 1:
+        print("")
+        print("##############################################")
+        print("")  
+        print("Available accounts:\n")
+        account_list=[acc.get_username() for acc in accounts]
+        if account_list==[] or account_list==['']:
+            print("None.\n")
+            return
+        for i,v in enumerate(account_list):
+            print(i+1,'. ',v,'\n')
+
+        print("##     Would you like to (S)end a message   ##")
+        #print("##          or (V)iew their profile         ##")
+        print("##               or (R)eturn                ##")
+        print("##############################################")  
+
+        print("")
+        user_input = input(":: ")
+        user_input = user_input[0].upper()
+
+        if user_input == "R":
+            return
+        elif user_input == "S":
+            send_message_base(account_list)
+        #elif user_input =="V":
+        #    pass
         else:
             print("Not a Valid input!")
 
@@ -2789,7 +3015,67 @@ def view_friend_profiles(self):
     else:
         print("Invalid choice.")
 
+
+def send_message_base(account_list):
+    print("Enter the number of the connection you want to send a message to or enter '0' to return.\n")
+    inpStr=input(":: ")
+
+    try:
+        inp=int(inpStr)-1
+    except ValueError:
+        print("Not a valid input!")
+        return
+    
+    if inp == -1:
+        return
+    
+    if inp in range(len(account_list)):
+        send_message(account_list[inp])
+        print("Successfully sent message to ",account_list[inp],"!\n")
+    else:
+        print("Not a valid input!")
+
+def send_message(username, is_reply=False):
+
+    ## check if username exists
+    i = get_account(username)
+    if i >= 0:
+        receiver = accounts[i]
+    else:
+        print("\nUser doesn't exist!\n")
+        return
+
+    ## check if friend
+    is_friend = False
+    friend_list = current_account.friends.split(',')
+    if username in friend_list:
+        is_friend = True
+
+    ## check if plus account
+    is_plus = False
+    if current_account.get_plus() == 1:
+        is_plus = True
+
+    ## make sure user is able to send message
+    if not is_friend and not is_plus and not is_reply:
+        print("\nI'm sorry, you are not friends with that person.\n")
+        return
+    else:
+        while 1:
+            subject = input("\nType the subject of the message.\n:: ")
+            body = input("\nType the body of the message.\n:: ")
+
+            ## make sure operation characters arn't used in the message
+            if "||:||" in subject or "||:||" in body or "||,||" in subject or "||,||" in body or "'" in subject or "'" in body or '"' in subject or '"' in body:
+                print("\nError! Invalid characters used!\n")
+            else:
+                message = "0||:||"+current_account.get_username()+"||:||"+subject+"||:||"+body
+                receiver.receive_message(message)
+                return
+
+
 def pending_friend_requests():
+    """ Shows a list of usernames that the user has sent a friend request to, but not yet accepted. """
     print("Here are your pending friend requests: \n")
     results = current_account.active_requests.split(",")[0:-1]
     for result in results:
@@ -2801,6 +3087,145 @@ def unset_current_account():
     """ Unsets the current account"""
     global current_account
     current_account = None
+
+
+def check_unread_messages():
+    ## check if any messages
+    if not current_account.inbox:
+        return 0
+
+    ## get inbox
+    inbox = current_account.inbox.split("||,||")
+
+    ## check if unread
+    num_unread = 0
+    for message in inbox:
+        if message[0] == "0":
+            num_unread += 1
+
+    ## display unread if exist
+    if num_unread == 1:
+        print("\nYou have an unread message!")
+    elif num_unread > 1:
+        print("\nYou have "+str(num_unread)+" unread messages!")
+    
+    return num_unread
+
+
+def check_inbox():
+
+    ## check if any messages
+    if not current_account.inbox:
+        print("\nYou do not have any messages!\n")
+        return
+
+    print("\nThese are your available messages: \n")
+
+    ## get inbox
+    inbox = current_account.inbox.split("||,||")
+    for i,v in enumerate(inbox):
+            info = v.split("||:||")
+            if info[0] == "0":
+                print(i+1,'. ',"From:",info[1],"|| Subject:",info[2],"(Unread)",'\n')
+            else:
+                print(i+1,'. ',"From:",info[1],"|| Subject:",info[2],'\n')
+
+    print("Enter the number of the message you want to view or enter '0' to return.")
+    inpStr=input(":: ")
+
+    try:
+        inp=int(inpStr)-1
+    except ValueError:
+        print("Not a valid input!")
+        return
+    
+    if inp == -1:
+        return
+
+    view_message_base(inbox[inp])
+
+def view_message_base(message):
+
+    info = message.split("||:||")
+    view_message(info)
+
+    main_input = input("\nWould you like to (R)eply to this message, (D)elete this message, or (M)ark unread? You can also (E)xit\n\n:: ")
+    
+    if main_input:
+        main_input = main_input[0].upper()
+
+    if main_input == "R":
+        send_message(info[1], is_reply=True)
+        current_account.mark_read(message, True)
+    elif main_input == "D":
+        current_account.delete_message(message)
+    elif main_input == "M":
+        current_account.mark_read(message, False)
+    elif main_input == "E":
+        current_account.mark_read(message, True)
+    else:
+        print("\n Not a valid input!\n")
+        current_account.mark_read(message, True)
+
+def view_message(info):
+    print("")
+    print("##################################################")
+    print("## From:", info[1] )
+    print("##")
+    print("## Subject:", info[2])
+    print("##  ----------------------------------------------")
+    print("##")
+    print("##   ",info[3])
+    print("##")    
+    print("##################################################")
+    print("")
+
+
+def login_notifications():
+    if not current_account.has_profile:
+        print("")
+        print("##############################")
+        print("## Don't forget to create a ##")
+        print("##         profile!         ##")     
+        print("##############################")
+        print("")
+    
+    if current_account.inbox:
+        print("")
+        print("##############################")
+        print("##     You have messages    ##")
+        print("##      waiting for you!    ##")
+        print("##############################")
+        print("")
+
+def job_notifications():
+    if current_account.applied:
+        apps = current_account.applied.split(",")
+        num_apps = len(apps)
+    else:
+        num_apps = 0
+
+    print("")
+    print("##############################")
+    print("##    You have currently    ##")
+    print(f"##    applied for {num_apps} jobs!   ##")
+    print("##############################")
+    print("")
+
+    if not current_account.new_job:
+        return
+    else:
+        new_jobs = current_account.new_job.split(",")
+        print("")
+        print("##############################")
+        for job_title in new_jobs:
+            print(f"A new job {job_title} has been posted")
+        print("##############################")
+        print("") 
+
+        current_account.new_job = ""
+        if not _testing_:
+            db.update("accounts", current_account.get_username(), "new_job", current_account.new_job)
 
 def user_menu():
 
@@ -2814,19 +3239,24 @@ def user_menu():
     """
 
     check_requests()   ## Check for friend requests
+    login_notifications() # Display notifications upon login
 
     is_logged_in = True
     while is_logged_in:
+
+        unread = check_unread_messages() ## check number of unread messages
+
         name = current_account.get_username()
         buffer1 = " "*ceil((36 - len(name))/2)          ## Makes sure the username is centered.
         buffer2 = " "*floor(((36 - len(name))/2)-1)
         print("")
         print("##################################################")
-        print("##", buffer1,   "Hello", name + "!", buffer2,  "##")
-        print("##    Would you like to (S)earch for a job,     ##")
-        print("##  (F)ind someone you know, (L)earn a skill.   ##")
-        print("## (E)dit your profile, or (V)iew your profile  ##") 
-        print("##    You can also (R)eturn to the main menu.   ##")                
+        print("##", buffer1,   "Hello", name + "!", buffer2)
+        print("##    Would you like to (S)earch for a job,")
+        print("##  (F)ind someone you know, (L)earn a skill,")
+        print("##    (E)dit your profile, (V)iew your profile,")
+        print("##          or (C)heck your inbox("+str(unread)+")?")  
+        print("##    You can also (R)eturn to the main menu.")                
         print("##################################################")
         print("")
 
@@ -2835,6 +3265,8 @@ def user_menu():
         print("##                  (U)seful Links              ##")
         print("##            (I)nCollege Important Links       ##")
         print("##                 Show my (N)etwork            ##")
+        if current_account.get_plus() == 1:
+            print("##                 Show (A)ll Users             ##")
         print("##             (P)ending friend requests        ##")
         print("##################################################")
         print("")   
@@ -2844,7 +3276,13 @@ def user_menu():
 
         print("")
 
-        if main_input == "S":
+        if current_account.get_plus() == 1 and main_input == "A":
+            show_full_network()
+
+        elif main_input == "C":
+            check_inbox()
+
+        elif main_input == "S":
             search_job()
 
         elif main_input == "F":
